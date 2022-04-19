@@ -38,12 +38,17 @@ class RunningSteward(object):
         total_turns = 0
         inform_wrong_service_count = 0
         for epoch_index in range(0, epoch_size, 1):
-            self.dialogue_manager.initialize(train_mode=self.parameter.get("train_mode"))
+            agent_action = self.dialogue_manager.initialize(train_mode=self.parameter.get("train_mode"))
             episode_over = False
             while episode_over == False:
                 reward, episode_over, dialogue_status = self.dialogue_manager.next(save_record=True,
                                                                                    train_mode=train_mode,
                                                                                    greedy_strategy=1)
+                reward, episode_over, dialogue_status, _agent_action = self.dialogue_manager.next(save_record=True,
+                                                                                                  train_mode=train_mode,
+                                                                                                  greedy_strategy=1,
+                                                                                                  agent_action=agent_action)
+                agent_action = _agent_action
                 total_reward += reward
             total_turns += self.dialogue_manager.state_tracker.turn
             inform_wrong_service_count += self.dialogue_manager.inform_wrong_service_count
@@ -119,26 +124,30 @@ class RunningSteward(object):
         """
         # save_model = self.parameter.get("save_model")  #要在参数那里设路径
         self.dialogue_manager.set_agent(agent=agent)
-        for index in range(0, epoch_number, 1):
-            # Training AgentDQN with experience replay
-            # if train_mode == 1 and isinstance(self.dialogue_manager.state_tracker.agent, AgentDQN):
-            # Simulating and filling experience replay pool.
-            # res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
-            self.dialogue_manager.train()
-            res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
-            print("%3d simulation SR %s, ABSR %s,ave reward %s, ave turns %s, ave wrong service %s" % (
-                index, res['success_rate'], res["ab_success_rate"], res['average_reward'], res['average_turn'],
-                res["average_wrong_service"]))
-            result = self.evaluate_model(index)
-            if result["success_rate"] >= self.best_result["success_rate"] and \
-                    result["average_wrong_service"] <= self.best_result["average_wrong_service"] and train_mode == 1:
-                self.dialogue_manager.experience_replay_pool = deque(
-                    maxlen=self.parameter.get("experience_replay_pool_size"))
-                self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
-                self.dialogue_manager.state_tracker.agent.save_model(model_performance=result, episodes_index=index,
-                                                                     checkpoint_path=self.checkpoint_path)
-                print("The model was saved.")
-                self.best_result = copy.deepcopy(result)
+        if train_mode == 1:
+            for index in range(0, epoch_number, 1):
+                # Training AgentDQN with experience replay
+                # if train_mode == 1 and isinstance(self.dialogue_manager.state_tracker.agent, AgentDQN):
+                # Simulating and filling experience replay pool.
+                # res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
+                self.dialogue_manager.train()
+                res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
+                print("%3d simulation SR %s, ABSR %s,ave reward %s, ave turns %s, ave wrong service %s" % (
+                    index, res['success_rate'], res["ab_success_rate"], res['average_reward'], res['average_turn'],
+                    res["average_wrong_service"]))
+                result = self.evaluate_model(index)
+                if result["success_rate"] >= self.best_result["success_rate"] and \
+                        result["average_wrong_service"] <= self.best_result[
+                    "average_wrong_service"] and train_mode == 1:
+                    self.dialogue_manager.experience_replay_pool = deque(
+                        maxlen=self.parameter.get("experience_replay_pool_size"))
+                    self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
+                    self.dialogue_manager.state_tracker.agent.save_model(model_performance=result, episodes_index=index,
+                                                                         checkpoint_path=self.checkpoint_path)
+                    print("The model was saved.")
+                    self.best_result = copy.deepcopy(result)
+        else:
+            self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
 
     def evaluate_model(self, index):
         """
