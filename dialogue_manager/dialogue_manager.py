@@ -19,7 +19,7 @@ class DialogueManager(object):
         self.experience_replay_pool = deque(maxlen=self.parameter.get("experience_replay_pool_size"))
         self.inform_wrong_service_count = 0
 
-    def initialize(self, train_mode=1, epoch_index=None):
+    def initialize(self, train_mode=1, epoch_index=None, greedy_strategy=1):
         self.state_tracker.initialize()
         self.inform_wrong_service_count = 0
         user_action = self.state_tracker.user.initialize()

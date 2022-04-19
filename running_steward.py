@@ -41,9 +41,9 @@ class RunningSteward(object):
             agent_action = self.dialogue_manager.initialize(train_mode=self.parameter.get("train_mode"))
             episode_over = False
             while episode_over == False:
-                reward, episode_over, dialogue_status = self.dialogue_manager.next(save_record=True,
-                                                                                   train_mode=train_mode,
-                                                                                   greedy_strategy=1)
+                # reward, episode_over, dialogue_status = self.dialogue_manager.next(save_record=True,
+                #                                                                    train_mode=train_mode,
+                #                                                                    greedy_strategy=1)
                 reward, episode_over, dialogue_status, _agent_action = self.dialogue_manager.next(save_record=True,
                                                                                                   train_mode=train_mode,
                                                                                                   greedy_strategy=1,

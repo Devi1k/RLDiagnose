@@ -60,7 +60,7 @@ class User(object):
     def next(self, agent_action, turn):
         agent_act_type = agent_action["action"]
         self.state["turn"] = turn
-        if self.state["turn"] == (self.max_turn - 2):
+        if self.state["turn"] == (self.max_turn - 1):
             self.episode_over = True
             self.state["action"] = dialogue_configuration.CLOSE_DIALOGUE
             self.dialogue_status = dialogue_configuration.DIALOGUE_STATUS_FAILED
