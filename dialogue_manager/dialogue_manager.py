@@ -44,8 +44,7 @@ class DialogueManager(object):
                                    parameters of the model will not be updated.
         :return: immediate reward for taking this agent action.
         """
-        # state = self.state_tracker.get_state()
-        # # Agent takes action.
+        state = self.state_tracker.get_state()
         # agent_action, action_index = self.state_tracker.agent.next(state=state, turn=self.state_tracker.turn,
         #                                                            greedy_strategy=greedy_strategy)
         # self.state_tracker.state_updater(agent_action=agent_action)
@@ -53,9 +52,11 @@ class DialogueManager(object):
         user_action, reward, episode_over, dialogue_status = self.state_tracker.user.next(agent_action=agent_action,
                                                                                           turn=self.state_tracker.turn)
         self.state_tracker.state_updater(user_action=user_action)
-        state = self.state_tracker.get_state()
-        agent_action, action_index = self.state_tracker.agent.next(state=state, turn=self.state_tracker.turn,
-                                                                   greedy_strategy=greedy_strategy)
+        _state = self.state_tracker.get_state()
+        # Agent takes action.
+        agent_action, action_index = self.state_tracker.agent.next(state=_state, turn=self.state_tracker.turn,
+                                                                   greedy_strategy=greedy_strategy,episode_over=episode_over)
+        self.state_tracker.state_updater(agent_action=agent_action)
         if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_INFORM_WRONG_SERVICE:
             self.inform_wrong_service_count += 1
         if save_record is True:
@@ -68,8 +69,6 @@ class DialogueManager(object):
             )
         else:
             pass
-
-        self.state_tracker.state_updater(agent_action=agent_action)
 
         return reward, episode_over, dialogue_status, agent_action
 

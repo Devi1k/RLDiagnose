@@ -419,6 +419,9 @@ class DQN2(object):
         print(self.current_net)
 
         if torch.cuda.is_available():
+            if torch.cuda.device_count() > 1:
+                self.current_net = torch.nn.DataParallel(self.current_net)
+                self.target_net = torch.nn.DataParallel(self.target_net)
             self.current_net.cuda(device=self.device)
             self.target_net.cuda(device=self.device)
 
@@ -507,7 +510,7 @@ class DQN2(object):
             expected_state_action_values = expected_state_action_values.mul(weight.view(-1))
 
         # Compute Huber loss
-        loss = torch.nn.functional.mse_loss(input=state_action_values, target=expected_state_action_values.view(-1, 1))
+        loss = torch.nn.functional.huber_loss(input=state_action_values, target=expected_state_action_values.view(-1, 1))
 
         # Optimize the model
         self.optimizer.zero_grad()  # zero the gradients.

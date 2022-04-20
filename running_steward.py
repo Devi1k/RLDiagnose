@@ -40,7 +40,7 @@ class RunningSteward(object):
         for epoch_index in range(0, epoch_size, 1):
             agent_action = self.dialogue_manager.initialize(train_mode=self.parameter.get("train_mode"))
             episode_over = False
-            while episode_over == False:
+            while episode_over is False:
                 # reward, episode_over, dialogue_status = self.dialogue_manager.next(save_record=True,
                 #                                                                    train_mode=train_mode,
                 #                                                                    greedy_strategy=1)
@@ -132,7 +132,7 @@ class RunningSteward(object):
                 # res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
                 self.dialogue_manager.train()
                 res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
-                print("%3d simulation SR %s, ABSR %s,ave reward %s, ave turns %s, ave wrong service %s" % (
+                print("Train %3d simulation SR %s, ABSR %s,ave reward %s, ave turns %s, ave wrong service %s" % (
                     index, res['success_rate'], res["ab_success_rate"], res['average_reward'], res['average_turn'],
                     res["average_wrong_service"]))
                 result = self.evaluate_model(index)
@@ -166,12 +166,14 @@ class RunningSteward(object):
         # evaluate_epoch_number = len(self.dialogue_manager.state_tracker.user.goal_set["test"])
         inform_wrong_service_count = 0
         for epoch_index in range(0, evaluate_epoch_number, 1):
-            self.dialogue_manager.initialize(train_mode=train_mode, epoch_index=epoch_index)
+            agent_action = self.dialogue_manager.initialize(train_mode=train_mode, epoch_index=epoch_index)
             episode_over = False
-            while episode_over == False:
-                reward, episode_over, dialogue_status = self.dialogue_manager.next(save_record=False,
-                                                                                   train_mode=train_mode,
-                                                                                   greedy_strategy=0)
+            while episode_over is False:
+                reward, episode_over, dialogue_status, _agent_action = self.dialogue_manager.next(save_record=True,
+                                                                                                  train_mode=train_mode,
+                                                                                                  greedy_strategy=1,
+                                                                                                  agent_action=agent_action)
+                agent_action = _agent_action
                 total_reward += reward
             total_truns += self.dialogue_manager.state_tracker.turn
             inform_wrong_service_count += self.dialogue_manager.inform_wrong_service_count
@@ -195,7 +197,7 @@ class RunningSteward(object):
             self.__print_run_info__()
         if index % 100 == 99 and save_performance == 1:
             self.__dump_performance__(epoch_index=index)
-        print("%3d simulation SR %s, ABSR %s, ave reward %s, ave turns %s, ave wrong service %s" % (
+        print("Eval %3d simulation SR %s, ABSR %s, ave reward %s, ave turns %s, ave wrong service %s" % (
             index, res['success_rate'], res["ab_success_rate"], res['average_reward'], res['average_turn'],
             res["average_wrong_service"]))
         return res

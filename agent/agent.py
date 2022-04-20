@@ -10,24 +10,24 @@ import dialogue_configuration
 from data.configuration import slot_max_weight, service, slot_set, action_set
 
 
-#from other.gen_goalset import service,slot_set,action_set  #用这种方法的时候注释掉48.49行
+# from other.gen_goalset import service,slot_set,action_set  #用这种方法的时候注释掉48.49行
 class Agent(object):
     """
     Basic class of agent.
     """
-    def __init__(self,parameter):
-        self.slot_set=slot_set
-        self.action_set=action_set
+
+    def __init__(self, parameter):
+        self.slot_set = slot_set
+        self.action_set = action_set
         self.parameter = parameter
         self.action_space = self._build_action_space()
         self.agent_action = {
-            "turn":1,
+            "turn": 1,
             "speaker": "agent",
-            "action":None,
-            "request_slots":{},
-            "inform_slots":{}
+            "action": None,
+            "request_slots": {},
+            "inform_slots": {}
         }
-
 
     def initialize(self):
         """
@@ -35,27 +35,31 @@ class Agent(object):
         :return: nothing to return.
         """
         self.agent_action = {
-            "turn":None,
+            "turn": None,
             "speaker": "agent",
-            "action":None,
-            "request_slots":{},
-            "inform_slots":{}
+            "action": None,
+            "request_slots": {},
+            "inform_slots": {}
         }
 
     def _build_action_space(self):
         feasible_actions = [
-            {'speaker':'agent','action': dialogue_configuration.CLOSE_DIALOGUE, 'inform_slots': {}, 'request_slots': {}},
-            {'speaker':'agent','action': dialogue_configuration.THANKS, 'inform_slots': {}, 'request_slots': {}}
+            {'speaker': 'agent', 'action': dialogue_configuration.CLOSE_DIALOGUE, 'inform_slots': {},
+             'request_slots': {}},
+            {'speaker': 'agent', 'action': dialogue_configuration.THANKS, 'inform_slots': {}, 'request_slots': {}}
         ]
         #   Adding the inform actions and request actions.
         for slot in sorted(slot_max_weight.keys()):
-            feasible_actions.append({'speaker':'agent','action': 'request', 'inform_slots': {}, 'request_slots': {slot: dialogue_configuration.VALUE_UNKNOWN}})
+            feasible_actions.append({'speaker': 'agent', 'action': 'request', 'inform_slots': {},
+                                     'request_slots': {slot: dialogue_configuration.VALUE_UNKNOWN}})
         # Services as actions.
         for slot in service:
-            feasible_actions.append({'speaker':'agent','action': 'inform', 'inform_slots': {"service":slot}, 'request_slots': {}})
+            feasible_actions.append(
+                {'speaker': 'agent', 'action': 'inform', 'inform_slots': {"service": slot}, 'request_slots': {}})
 
         return feasible_actions
-    def next(self, state, turn, greedy_strategy):
+
+    def next(self, state, turn, greedy_strategy, episode_over):
         """
         Taking action based on different methods, e.g., DQN-based AgentDQN, rule-based AgentRule.
         Detail codes will be implemented in different sub-class of this class.
@@ -79,11 +83,11 @@ class Agent(object):
         current_slots = copy.deepcopy(state["current_slots"]["inform_slots"])
         current_slots_rep = np.zeros(len(slot_set.keys()))
         for slot in current_slots.keys():
-            #用权重
-            #current_slots_rep[self.slot_set[slot]] =current_slots[slot]
-            if current_slots[slot]==True:
+            # 用权重
+            # current_slots_rep[self.slot_set[slot]] =current_slots[slot]
+            if current_slots[slot] == True:
                 current_slots_rep[self.slot_set[slot]] = 1.0
-            elif current_slots[slot]==False:
+            elif current_slots[slot] == False:
                 current_slots_rep[self.slot_set[slot]] = -1.0
         turn_rep = np.zeros(self.parameter["max_turn"])
         turn_rep[state["turn"]] = 1.0
@@ -95,10 +99,10 @@ class Agent(object):
         if "service" in user_inform_slots: user_inform_slots.pop("service")
         user_inform_slots_rep = np.zeros(len(self.slot_set.keys()))
         for slot in user_inform_slots.keys():
-            #user_inform_slots_rep[self.slot_set[slot]] = user_inform_slots[slot]
-            if user_inform_slots[slot]==True:
+            # user_inform_slots_rep[self.slot_set[slot]] = user_inform_slots[slot]
+            if user_inform_slots[slot] == True:
                 user_inform_slots_rep[self.slot_set[slot]] = 1.0
-            elif user_inform_slots[slot]==False:
+            elif user_inform_slots[slot] == False:
                 user_inform_slots_rep[self.slot_set[slot]] = -1.0
         user_request_slots = copy.deepcopy(state["user_action"]["request_slots"])
         user_request_slots_rep = np.zeros(len(self.slot_set.keys()))
@@ -111,9 +115,9 @@ class Agent(object):
             pass
         agent_inform_slots_rep = np.zeros(len(self.slot_set.keys()))
         try:
-           agent_inform_slots = copy.deepcopy(state["agent_action"]["inform_slots"])
-           for slot in agent_inform_slots.keys():
-               agent_inform_slots_rep[self.slot_set[slot]] = 1.0
+            agent_inform_slots = copy.deepcopy(state["agent_action"]["inform_slots"])
+            for slot in agent_inform_slots.keys():
+                agent_inform_slots_rep[self.slot_set[slot]] = 1.0
         except:
             pass
         agent_request_slots_rep = np.zeros(len(self.slot_set.keys()))
@@ -124,6 +128,6 @@ class Agent(object):
         except:
             pass
         state_rep = np.hstack((current_slots_rep, user_action_rep, user_inform_slots_rep,
-                               user_request_slots_rep, agent_action_rep, agent_inform_slots_rep, agent_request_slots_rep, turn_rep))
+                               user_request_slots_rep, agent_action_rep, agent_inform_slots_rep,
+                               agent_request_slots_rep, turn_rep))
         return state_rep
-

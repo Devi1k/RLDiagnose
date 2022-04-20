@@ -60,7 +60,7 @@ class User(object):
     def next(self, agent_action, turn):
         agent_act_type = agent_action["action"]
         self.state["turn"] = turn
-        if self.state["turn"] == (self.max_turn - 1):
+        if self.state["turn"] == (self.max_turn - 2):
             self.episode_over = True
             self.state["action"] = dialogue_configuration.CLOSE_DIALOGUE
             self.dialogue_status = dialogue_configuration.DIALOGUE_STATUS_FAILED
@@ -72,13 +72,10 @@ class User(object):
                 self._response_request(agent_action=agent_action)
             elif agent_act_type == "inform":
                 self._response_inform(agent_action=agent_action)
-            user_action = self._assemble_user_action()
-            reward = self._reward_function()
-            return user_action, reward, self.episode_over, self.dialogue_status
-        else:
-            user_action = self._assemble_user_action()
-            reward = self._reward_function()
-            return user_action, reward, self.episode_over, self.dialogue_status
+        user_action = self._assemble_user_action()
+        reward = self._reward_function()
+        return user_action, reward, self.episode_over, self.dialogue_status
+
 
     def _response_request(self, agent_action):
         for slot in agent_action["request_slots"].keys():

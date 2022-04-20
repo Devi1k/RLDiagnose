@@ -11,7 +11,7 @@ class AgentRule(Agent):
     def __init__(self, parameter):
         super(AgentRule, self).__init__(parameter=parameter)
 
-    def next(self, state, turn, greedy_strategy):
+    def next(self, state, turn, greedy_strategy, episode_over=False):
         score_max = 0
         max = 0
         score = []
@@ -37,6 +37,14 @@ class AgentRule(Agent):
         self.agent_action["inform_slots"].clear()
         self.agent_action["turn"] = turn
 
+        if episode_over:
+            self.agent_action['action'] = dialogue_configuration.CLOSE_DIALOGUE
+            self.agent_action['inform_slots']: {}
+            self.agent_action['request_slots']: {}
+            agent_action = copy.deepcopy(self.agent_action)
+            agent_action.pop("turn")
+            agent_index = self.action_space.index(agent_action)
+            return self.agent_action, agent_index
         if score_max > 100:
             self.agent_action["action"] = "inform"
             self.agent_action["inform_slots"]["service"] = candidate_service
