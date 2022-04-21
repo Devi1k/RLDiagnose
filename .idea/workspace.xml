@@ -4,18 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="244d3ec2-5300-4743-9e84-8ecc075ace91" name="变更" comment="修改user和agent顺序(eval_model">
-      <change beforePath="$PROJECT_DIR$/.idea/govChatbot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/govChatbot.iml" afterDir="false" />
+    <list default="true" id="244d3ec2-5300-4743-9e84-8ecc075ace91" name="变更" comment="增加episode结束后agent的动作">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/agent/agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/agent/agent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/agent/agent_dqn.py" beforeDir="false" afterPath="$PROJECT_DIR$/agent/agent_dqn.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/agent/agent_rule.py" beforeDir="false" afterPath="$PROJECT_DIR$/agent/agent_rule.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dialogue_configuration.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialogue_configuration.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dialogue_manager/dialogue_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialogue_manager/dialogue_manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/policy_learning/dqn_torch.py" beforeDir="false" afterPath="$PROJECT_DIR$/policy_learning/dqn_torch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/run.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/running_steward.py" beforeDir="false" afterPath="$PROJECT_DIR$/running_steward.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_simulator/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_simulator/user.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -173,6 +164,7 @@
       <workItem from="1650298955706" duration="707000" />
       <workItem from="1650299848135" duration="10428000" />
       <workItem from="1650344351117" duration="2922000" />
+      <workItem from="1650505041650" duration="923000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1650299996268</created>
@@ -188,7 +180,14 @@
       <option name="project" value="LOCAL" />
       <updated>1650349084774</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="增加episode结束后agent的动作">
+      <created>1650449790318</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1650449790318</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -214,7 +213,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="first commit" />
     <MESSAGE value="修改user和agent顺序" />
-    <option name="LAST_COMMIT_MESSAGE" value="修改user和agent顺序" />
+    <MESSAGE value="增加episode结束后agent的动作" />
+    <option name="LAST_COMMIT_MESSAGE" value="增加episode结束后agent的动作" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -25,18 +25,18 @@ class DialogueManager(object):
         user_action = self.state_tracker.user.initialize()
         self.state_tracker.state_updater(user_action=user_action)
         self.state_tracker.agent.initialize()
-        state = self.state_tracker.get_state()
-        agent_action, action_index = self.state_tracker.agent.next(state=state, turn=self.state_tracker.turn,
+        init_state = self.state_tracker.get_state()
+        agent_action, action_index = self.state_tracker.agent.next(state=init_state, turn=self.state_tracker.turn,
                                                                    greedy_strategy=greedy_strategy)
         self.state_tracker.state_updater(agent_action=agent_action)
         # state = self.state_tracker.get_state()
         # self.self.log.info(state["current_slots"]["agent_request_slots"].keys())  #测试是否为空，证明不是
-        return agent_action
+        return agent_action, action_index, init_state
 
     def set_agent(self, agent):
         self.state_tracker.set_agent(agent=agent)
 
-    def next(self, save_record, train_mode, agent_action, greedy_strategy):
+    def next(self, prev_state, save_record, train_mode, prev_agent_action, prev_agent_index, greedy_strategy):
         """
         The next two turns of this dialogue session. The agent will take action first and then followed by user simulator.
         :param save_record: bool, save record?
@@ -44,33 +44,36 @@ class DialogueManager(object):
                                    parameters of the model will not be updated.
         :return: immediate reward for taking this agent action.
         """
-        state = self.state_tracker.get_state()
+        # state = self.state_tracker.get_state()
         # agent_action, action_index = self.state_tracker.agent.next(state=state, turn=self.state_tracker.turn,
         #                                                            greedy_strategy=greedy_strategy)
         # self.state_tracker.state_updater(agent_action=agent_action)
         # User takes action.
-        user_action, reward, episode_over, dialogue_status = self.state_tracker.user.next(agent_action=agent_action,
-                                                                                          turn=self.state_tracker.turn)
+        user_action, reward, episode_over, dialogue_status = self.state_tracker.user.next(
+            agent_action=prev_agent_action,
+            turn=self.state_tracker.turn)
         self.state_tracker.state_updater(user_action=user_action)
         _state = self.state_tracker.get_state()
         # Agent takes action.
         agent_action, action_index = self.state_tracker.agent.next(state=_state, turn=self.state_tracker.turn,
-                                                                   greedy_strategy=greedy_strategy,episode_over=episode_over)
+                                                                   greedy_strategy=greedy_strategy,
+                                                                   episode_over=episode_over)
         self.state_tracker.state_updater(agent_action=agent_action)
         if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_INFORM_WRONG_SERVICE:
             self.inform_wrong_service_count += 1
         if save_record is True:
             self.record_training_sample(
-                state=state,
-                agent_action=action_index,
-                next_state=self.state_tracker.get_state(),
+                state=prev_state,
+                agent_action=prev_agent_index,
+                next_state=_state,
                 reward=reward,
                 episode_over=episode_over
             )
         else:
             pass
+        prev_state = _state
 
-        return reward, episode_over, dialogue_status, agent_action
+        return reward, episode_over, dialogue_status, agent_action, action_index, prev_state
 
     def record_training_sample(self, state, agent_action, reward, next_state, episode_over):
         state = self.state_tracker.agent.state_to_representation_last(state)

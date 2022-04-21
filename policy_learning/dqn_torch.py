@@ -510,7 +510,7 @@ class DQN2(object):
             expected_state_action_values = expected_state_action_values.mul(weight.view(-1))
 
         # Compute Huber loss
-        loss = torch.nn.functional.huber_loss(input=state_action_values, target=expected_state_action_values.view(-1, 1))
+        loss = torch.nn.functional.mse_loss(input=state_action_values, target=expected_state_action_values.view(-1, 1))
 
         # Optimize the model
         self.optimizer.zero_grad()  # zero the gradients.

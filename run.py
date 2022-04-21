@@ -10,7 +10,7 @@ from running_steward import RunningSteward
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--simulate_epoch_number", dest="simulate_epoch_number", type=int, default=100,
+parser.add_argument("--simulate_epoch_number", dest="simulate_epoch_number", type=int, default=500,
                     help="the number of simulate epoch.")
 parser.add_argument("--epoch_size", dest="epoch_size", type=int, default=900, help="the size of each simulate epoch.")
 parser.add_argument("--evaluate_epoch_number", dest="evaluate_epoch_number", type=int, default=50,

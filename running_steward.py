@@ -38,17 +38,23 @@ class RunningSteward(object):
         total_turns = 0
         inform_wrong_service_count = 0
         for epoch_index in range(0, epoch_size, 1):
-            agent_action = self.dialogue_manager.initialize(train_mode=self.parameter.get("train_mode"))
+            agent_action, action_index, prev_state = self.dialogue_manager.initialize(
+                train_mode=self.parameter.get("train_mode"))
             episode_over = False
             while episode_over is False:
                 # reward, episode_over, dialogue_status = self.dialogue_manager.next(save_record=True,
                 #                                                                    train_mode=train_mode,
                 #                                                                    greedy_strategy=1)
-                reward, episode_over, dialogue_status, _agent_action = self.dialogue_manager.next(save_record=True,
-                                                                                                  train_mode=train_mode,
-                                                                                                  greedy_strategy=1,
-                                                                                                  agent_action=agent_action)
+                reward, episode_over, dialogue_status, _agent_action, _action_index, _prev_state = self.dialogue_manager.next(
+                    save_record=True,
+                    train_mode=train_mode,
+                    greedy_strategy=1,
+                    prev_agent_action=agent_action,
+                    prev_agent_index=action_index,
+                    prev_state=prev_state)
                 agent_action = _agent_action
+                action_index = _action_index
+                prev_state = _prev_state
                 total_reward += reward
             total_turns += self.dialogue_manager.state_tracker.turn
             inform_wrong_service_count += self.dialogue_manager.inform_wrong_service_count
@@ -166,15 +172,22 @@ class RunningSteward(object):
         # evaluate_epoch_number = len(self.dialogue_manager.state_tracker.user.goal_set["test"])
         inform_wrong_service_count = 0
         for epoch_index in range(0, evaluate_epoch_number, 1):
-            agent_action = self.dialogue_manager.initialize(train_mode=train_mode, epoch_index=epoch_index)
+            agent_action, action_index, prev_state = self.dialogue_manager.initialize(
+                train_mode=self.parameter.get("train_mode"))
             episode_over = False
             while episode_over is False:
-                reward, episode_over, dialogue_status, _agent_action = self.dialogue_manager.next(save_record=True,
-                                                                                                  train_mode=train_mode,
-                                                                                                  greedy_strategy=1,
-                                                                                                  agent_action=agent_action)
+                reward, episode_over, dialogue_status, _agent_action, _action_index, _prev_state = self.dialogue_manager.next(
+                    save_record=True,
+                    train_mode=train_mode,
+                    greedy_strategy=1,
+                    prev_agent_action=agent_action,
+                    prev_agent_index=action_index,
+                    prev_state=prev_state)
                 agent_action = _agent_action
+                action_index = _action_index
+                prev_state = _prev_state
                 total_reward += reward
+
             total_truns += self.dialogue_manager.state_tracker.turn
             inform_wrong_service_count += self.dialogue_manager.inform_wrong_service_count
             if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_SUCCESS:
