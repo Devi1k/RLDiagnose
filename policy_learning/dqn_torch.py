@@ -419,9 +419,6 @@ class DQN2(object):
         print(self.current_net)
 
         if torch.cuda.is_available():
-            if torch.cuda.device_count() > 1:
-                self.current_net = torch.nn.DataParallel(self.current_net)
-                self.target_net = torch.nn.DataParallel(self.target_net)
             self.current_net.cuda(device=self.device)
             self.target_net.cuda(device=self.device)
 
