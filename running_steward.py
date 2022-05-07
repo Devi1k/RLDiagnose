@@ -208,7 +208,7 @@ class RunningSteward(object):
         self.learning_curve[index]["average_wrong_service"] = average_wrong_service
         if index % 10 == 0:
             self.__print_run_info__()
-        if index % 100 == 99 and save_performance == 1:
+        if index % 10 == 9 and save_performance == 1:
             self.__dump_performance__(epoch_index=index)
         print("Eval %3d simulation SR %s, ABSR %s, ave reward %s, ave turns %s, ave wrong service %s" % (
             index, res['success_rate'], res["ab_success_rate"], res['average_reward'], res['average_turn'],

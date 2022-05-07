@@ -4,11 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="244d3ec2-5300-4743-9e84-8ecc075ace91" name="变更" comment="修改slot 以及取消并行">
+    <list default="true" id="244d3ec2-5300-4743-9e84-8ecc075ace91" name="变更" comment="调整权重 重新生成slot_set以及goal_set">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/configuration.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/configuration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/goal_set.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/goal_set.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/policy_learning/dqn_torch.py" beforeDir="false" afterPath="$PROJECT_DIR$/policy_learning/dqn_torch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dialogue_configuration.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialogue_configuration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/run.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/running_steward.py" beforeDir="false" afterPath="$PROJECT_DIR$/running_steward.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,7 +134,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="run" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="run" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="govChatbot" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -142,7 +142,7 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
@@ -156,7 +156,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="save_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="running_steward" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="govChatbot" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -169,7 +169,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/save_test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/running_steward.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -200,13 +200,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.dialogue_manager" />
+      <item itemvalue="Python.generate_goalset" />
+      <item itemvalue="Python.run" />
+      <item itemvalue="Python.slot_set" />
+      <item itemvalue="Python.running_steward" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.run" />
+        <item itemvalue="Python.running_steward" />
         <item itemvalue="Python.slot_set" />
         <item itemvalue="Python.generate_goalset" />
         <item itemvalue="Python.dialogue_manager" />
-        <item itemvalue="Python.save_test" />
       </list>
     </recent_temporary>
   </component>
@@ -223,7 +230,12 @@
       <workItem from="1650299848135" duration="10428000" />
       <workItem from="1650344351117" duration="2922000" />
       <workItem from="1650505041650" duration="923000" />
-      <workItem from="1651147038413" duration="637000" />
+      <workItem from="1651147038413" duration="1236000" />
+      <workItem from="1651163489958" duration="1204000" />
+      <workItem from="1651818450868" duration="2241000" />
+      <workItem from="1651834633180" duration="312000" />
+      <workItem from="1651835430196" duration="4662000" />
+      <workItem from="1651889305686" duration="3524000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1650299996268</created>
@@ -246,7 +258,14 @@
       <option name="project" value="LOCAL" />
       <updated>1650449790318</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="调整权重 重新生成slot_set以及goal_set">
+      <created>1651147842713</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1651147842714</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -273,7 +292,9 @@
     <MESSAGE value="first commit" />
     <MESSAGE value="修改user和agent顺序" />
     <MESSAGE value="增加episode结束后agent的动作" />
-    <option name="LAST_COMMIT_MESSAGE" value="增加episode结束后agent的动作" />
+    <MESSAGE value="调整权重 重新生成slot_set以及goal_set" />
+    <option name="LAST_COMMIT_MESSAGE" value="调整权重 重新生成slot_set以及goal_set" />
+    <option name="GROUP_MULTIFILE_MERGE_BY_DIRECTORY" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -285,7 +306,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/run.py</url>
-          <line>67</line>
+          <line>70</line>
           <option name="timeStamp" value="29" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -298,14 +319,40 @@
           <line>47</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/running_steward.py</url>
+          <line>139</line>
+          <option name="timeStamp" value="39" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/agent/agent_dqn.py</url>
+          <line>30</line>
+          <option name="timeStamp" value="53" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/agent/agent_dqn.py</url>
+          <line>22</line>
+          <option name="timeStamp" value="54" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/running_steward.py</url>
+          <line>241</line>
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/running_steward.py</url>
+          <line>211</line>
+          <option name="timeStamp" value="57" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/govChatbot$generate_goalset.coverage" NAME="generate_goalset 覆盖结果" MODIFIED="1651146483212" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/data" />
+    <SUITE FILE_PATH="coverage/govChatbot$generate_goalset.coverage" NAME="generate_goalset 覆盖结果" MODIFIED="1651147689169" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/data" />
+    <SUITE FILE_PATH="coverage/govChatbot$running_steward.coverage" NAME="running_steward 覆盖结果" MODIFIED="1651892319169" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/govChatbot$dialogue_manager.coverage" NAME="dialogue_manager 覆盖结果" MODIFIED="1650349490558" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dialogue_manager" />
-    <SUITE FILE_PATH="coverage/govChatbot$slot_set.coverage" NAME="slot_set 覆盖结果" MODIFIED="1651147195326" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/data" />
+    <SUITE FILE_PATH="coverage/govChatbot$slot_set.coverage" NAME="slot_set 覆盖结果" MODIFIED="1651147764365" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/data" />
     <SUITE FILE_PATH="coverage/govChatbot$save_test.coverage" NAME="save_test 覆盖结果" MODIFIED="1650287766027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/govChatbot$run.coverage" NAME="run 覆盖结果" MODIFIED="1651147325549" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/run" />
+    <SUITE FILE_PATH="coverage/govChatbot$run.coverage" NAME="run 覆盖结果" MODIFIED="1651892642663" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

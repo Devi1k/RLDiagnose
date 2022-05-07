@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 # Max turn.
-MAX_TURN = 10
+MAX_TURN = 4
 
 # DIALOGUE STATUS
 DIALOGUE_STATUS_FAILED = 0

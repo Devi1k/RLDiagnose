@@ -28,10 +28,10 @@ parser.add_argument("--gamma", dest="gamma", type=float, default=1.0, help="The 
 parser.add_argument("--train_mode", dest="train_mode", type=int, default=1, help="training mode? True:1 or False:0")
 
 # TODO: Save model, performance and dialogue content ? And what is the path if yes? #这部分还没写
-parser.add_argument("--save_performance", dest="save_performance", type=int, default=0,
+parser.add_argument("--save_performance", dest="save_performance", type=int, default=1,
                     help="save the performance? 1:Yes, 0:No")
 parser.add_argument("--performance_save_path", dest="performance_save_path", type=str,
-                    default="./../model/dqn/learning_rate/",
+                    default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "model/dqn/learning_rate/"),
                     help="the folder where learning rate save to, ending with /.")
 parser.add_argument("--allow_wrong_service", dest="allow_wrong_service", type=int, default=1,
                     help="Allow the agent to inform wrong service? 1:Yes, 0:No")
@@ -39,16 +39,19 @@ parser.add_argument("--dqn_learning_rate", dest="dqn_learning_rate", type=float,
                     help="the learning rate of dqn.")
 parser.add_argument("--saved_model", dest="saved_model", type=str,
                     default="/home/yanking/disk1/nizepu/govChatbot/model/dqn/checkpoint/model_d_agent_dqn_s1.0_r36.4_t3.36_wd0.0_e49.pkl")
-parser.add_argument("--max_turn", dest="max_turn", type=int, default=10, help="the max turn in one episode.")
-parser.add_argument("--input_size_dqn", dest="input_size_dqn", type=int, default=1123, help="the input_size of DQN.")
+parser.add_argument("--max_turn", dest="max_turn", type=int, default=6, help="the max turn in one episode.")
+parser.add_argument("--input_size_dqn", dest="input_size_dqn", type=int, default=1119, help="the input_size of DQN.")
 args = parser.parse_args()
 parameter = vars(args)
 print(json.dumps(parameter, indent=2))
 
 checkpoint_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model/dqn/checkpoint/")
+# performance_save_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model/dqn/learning_rate/")
 if not os.path.exists(checkpoint_path):
     os.makedirs(checkpoint_path)
 
+# if not os.path.exists(performance_save_path):
+#     os.makedirs(performance_save_path)
 
 def run():
     steward = RunningSteward(parameter=parameter, checkpoint_path=checkpoint_path)
