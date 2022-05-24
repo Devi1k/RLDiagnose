@@ -5,6 +5,7 @@ from collections import deque
 
 import dialogue_configuration
 from agent.agent_dqn import AgentDQN
+from data.PrioritizedReplay import PrioritizedReplayBuffer
 from state_tracker.state_tracker import StateTracker
 
 
@@ -16,7 +17,11 @@ class DialogueManager(object):
     def __init__(self, user, agent, parameter):
         self.state_tracker = StateTracker(user=user, agent=agent, parameter=parameter)
         self.parameter = parameter
-        self.experience_replay_pool = deque(maxlen=self.parameter.get("experience_replay_pool_size"))
+        # self.experience_replay_pool = deque(maxlen=self.parameter.get("experience_replay_pool_size"))
+        if self.parameter.get('prioritized_replay'):
+            self.experience_replay_pool = PrioritizedReplayBuffer(buffer_size=self.parameter.get("experience_replay_pool_size"))
+        else:
+            self.experience_replay_pool = deque(maxlen=self.parameter.get("experience_replay_pool_size"))
         self.inform_wrong_service_count = 0
 
     def initialize(self, train_mode=1, epoch_index=None, greedy_strategy=1):
@@ -61,14 +66,37 @@ class DialogueManager(object):
         self.state_tracker.state_updater(agent_action=agent_action)
         if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_INFORM_WRONG_SERVICE:
             self.inform_wrong_service_count += 1
+        # if save_record is True:
+        #     self.record_training_sample(
+        #         state=prev_state,
+        #         agent_action=prev_agent_index,
+        #         next_state=_state,
+        #         reward=reward,
+        #         episode_over=episode_over
+        #     )
+        # else:
+        #     pass
         if save_record is True:
-            self.record_training_sample(
-                state=prev_state,
-                agent_action=prev_agent_index,
-                next_state=_state,
-                reward=reward,
-                episode_over=episode_over
-            )
+            if self.parameter.get('prioritized_replay'):
+                current_action_value = self.state_tracker.agent.current_action_value
+                target_action_value = self.state_tracker.agent.next_state_values_DDQN(prev_state)
+                TD_error = reward + self.parameter.get("gamma") * target_action_value - current_action_value
+                self.record_prioritized_training_sample(
+                    state=prev_state,
+                    agent_action=prev_agent_index,
+                    next_state=_state,
+                    reward=reward,
+                    episode_over=episode_over,
+                    TD_error=TD_error
+                )
+            else:
+                self.record_training_sample(
+                    state=prev_state,
+                    agent_action=prev_agent_index,
+                    next_state=_state,
+                    reward=reward,
+                    episode_over=episode_over
+                )
         else:
             pass
         prev_state = _state
@@ -79,6 +107,17 @@ class DialogueManager(object):
         state = self.state_tracker.agent.state_to_representation_last(state)
         next_state = self.state_tracker.agent.state_to_representation_last(next_state)
         self.experience_replay_pool.append((state, agent_action, reward, next_state, episode_over))  # 每两个turn添加一次
+
+    def record_prioritized_training_sample(self, state, agent_action, reward, next_state, episode_over, TD_error):
+        state_rep = self.state_tracker.agent.state_to_representation_last(state=state)
+        next_state_rep = self.state_tracker.agent.state_to_representation_last(state=next_state)
+
+        self.experience_replay_pool.add(state_rep, agent_action, reward, next_state_rep, episode_over, TD_error)
+        self.state_tracker.agent.action_visitation_count.setdefault(agent_action, 0)
+        self.state_tracker.agent.action_visitation_count[agent_action] += 1
+        # self.experience_replay_pool.add(
+        #     self.state_tracker.agent.record_prioritized_training_sample(state, agent_action, reward, next_state,
+        #                                                                 episode_over, TD_error))
 
     def train(self):  # 一个epoch一次
         if isinstance(self.state_tracker.agent, AgentDQN):
@@ -93,7 +132,10 @@ class DialogueManager(object):
         cur_bellman_err = 0.0
         batch_size = self.parameter.get("batch_size", 16)
         for iter in range(int(len(self.experience_replay_pool) / (batch_size))):
-            batch = random.sample(self.experience_replay_pool, batch_size)  # sample()用于随机抽样。
+            if self.parameter.get('prioritized_replay'):
+                batch = self.experience_replay_pool.sample(batch_size)
+            else:
+                batch = random.sample(self.experience_replay_pool, batch_size)  # sample()用于随机抽样。
             loss = self.state_tracker.agent.train(batch=batch)
             cur_bellman_err += loss["loss"]
         print("cur bellman err %.4f, experience replay pool %s" % (

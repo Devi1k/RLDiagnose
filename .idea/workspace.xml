@@ -4,9 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="244d3ec2-5300-4743-9e84-8ecc075ace91" name="变更" comment="调整权重 重新生成slot_set以及goal_set">
+    <list default="true" id="244d3ec2-5300-4743-9e84-8ecc075ace91" name="变更" comment="加入画图 改max_turn">
+      <change afterPath="$PROJECT_DIR$/data/PrioritizedReplay.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/policy_learning/actor_critic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/govChatbot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/govChatbot.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/agent/agent_dqn.py" beforeDir="false" afterPath="$PROJECT_DIR$/agent/agent_dqn.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dialogue_configuration.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialogue_configuration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dialogue_manager/dialogue_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialogue_manager/dialogue_manager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/run.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/running_steward.py" beforeDir="false" afterPath="$PROJECT_DIR$/running_steward.py" afterDir="false" />
     </list>
@@ -62,7 +69,9 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="27x2UPCpKYZLTMuv12Mnm44j9dS" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -71,6 +80,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="TODO_SCOPE" value="所有位置" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
@@ -235,7 +245,14 @@
       <workItem from="1651818450868" duration="2241000" />
       <workItem from="1651834633180" duration="312000" />
       <workItem from="1651835430196" duration="4662000" />
-      <workItem from="1651889305686" duration="3524000" />
+      <workItem from="1651889305686" duration="4517000" />
+      <workItem from="1651924133576" duration="100000" />
+      <workItem from="1652023758652" duration="627000" />
+      <workItem from="1652085203081" duration="1207000" />
+      <workItem from="1652173640820" duration="598000" />
+      <workItem from="1652320454957" duration="7319000" />
+      <workItem from="1652686672882" duration="4551000" />
+      <workItem from="1653379183151" duration="1209000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1650299996268</created>
@@ -265,7 +282,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651147842714</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="加入画图 改max_turn">
+      <created>1651892956785</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1651892956785</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -293,7 +317,8 @@
     <MESSAGE value="修改user和agent顺序" />
     <MESSAGE value="增加episode结束后agent的动作" />
     <MESSAGE value="调整权重 重新生成slot_set以及goal_set" />
-    <option name="LAST_COMMIT_MESSAGE" value="调整权重 重新生成slot_set以及goal_set" />
+    <MESSAGE value="加入画图 改max_turn" />
+    <option name="LAST_COMMIT_MESSAGE" value="加入画图 改max_turn" />
     <option name="GROUP_MULTIFILE_MERGE_BY_DIRECTORY" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -305,18 +330,8 @@
           <option name="timeStamp" value="16" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/run.py</url>
-          <line>70</line>
-          <option name="timeStamp" value="29" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/running_steward.py</url>
-          <line>149</line>
-          <option name="timeStamp" value="32" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/dialogue_manager/dialogue_manager.py</url>
-          <line>47</line>
+          <line>52</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -325,24 +340,19 @@
           <option name="timeStamp" value="39" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/agent/agent_dqn.py</url>
-          <line>30</line>
-          <option name="timeStamp" value="53" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/agent/agent_dqn.py</url>
-          <line>22</line>
-          <option name="timeStamp" value="54" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/running_steward.py</url>
-          <line>241</line>
+          <line>247</line>
           <option name="timeStamp" value="56" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/running_steward.py</url>
-          <line>211</line>
+          <line>217</line>
           <option name="timeStamp" value="57" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/dialogue_manager/dialogue_manager.py</url>
+          <line>137</line>
+          <option name="timeStamp" value="60" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -353,6 +363,6 @@
     <SUITE FILE_PATH="coverage/govChatbot$dialogue_manager.coverage" NAME="dialogue_manager 覆盖结果" MODIFIED="1650349490558" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dialogue_manager" />
     <SUITE FILE_PATH="coverage/govChatbot$slot_set.coverage" NAME="slot_set 覆盖结果" MODIFIED="1651147764365" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/data" />
     <SUITE FILE_PATH="coverage/govChatbot$save_test.coverage" NAME="save_test 覆盖结果" MODIFIED="1650287766027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/govChatbot$run.coverage" NAME="run 覆盖结果" MODIFIED="1651892642663" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/govChatbot$run.coverage" NAME="run 覆盖结果" MODIFIED="1652332597043" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

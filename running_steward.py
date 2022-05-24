@@ -7,6 +7,7 @@ from collections import deque
 
 import dialogue_configuration
 from agent.agent_rule import AgentRule
+from data.PrioritizedReplay import PrioritizedReplayBuffer
 from dialogue_manager.dialogue_manager import DialogueManager
 from user_simulator.user import User
 
@@ -136,17 +137,22 @@ class RunningSteward(object):
                 # if train_mode == 1 and isinstance(self.dialogue_manager.state_tracker.agent, AgentDQN):
                 # Simulating and filling experience replay pool.
                 # res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
-                self.dialogue_manager.train()
                 res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
                 print("Train %3d simulation SR %s, ABSR %s,ave reward %s, ave turns %s, ave wrong service %s" % (
                     index, res['success_rate'], res["ab_success_rate"], res['average_reward'], res['average_turn'],
                     res["average_wrong_service"]))
+                self.dialogue_manager.train()
                 result = self.evaluate_model(index)
                 if result["success_rate"] >= self.best_result["success_rate"] and \
                         result["average_wrong_service"] <= self.best_result[
                     "average_wrong_service"] and train_mode == 1:
-                    self.dialogue_manager.experience_replay_pool = deque(
-                        maxlen=self.parameter.get("experience_replay_pool_size"))
+                    # self.dialogue_manager.experience_replay_pool = deque(
+                    #     maxlen=self.parameter.get("experience_replay_pool_size"))
+                    if self.parameter.get('prioritized_replay'):
+                        self.dialogue_manager.experience_replay_pool = PrioritizedReplayBuffer(
+                            buffer_size=self.parameter.get("experience_replay_pool_size"))
+                    else:
+                        self.dialogue_manager.experience_replay_pool = deque(maxlen=self.parameter.get("experience_replay_pool_size"))
                     self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
                     self.dialogue_manager.state_tracker.agent.save_model(model_performance=result, episodes_index=index,
                                                                          checkpoint_path=self.checkpoint_path)

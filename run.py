@@ -18,7 +18,7 @@ parser.add_argument("--evaluate_epoch_number", dest="evaluate_epoch_number", typ
 parser.add_argument("--experience_replay_pool_size", dest="experience_replay_pool_size", type=int, default=20000,
                     help="the size of experience replay.")
 parser.add_argument("--hidden_size_dqn", dest="hidden_size_dqn", type=int, default=300, help="the hidden_size of DQN.")
-parser.add_argument("--warm_start", dest="warm_start", type=int, default=1,
+parser.add_argument("--warm_start", dest="warm_start", type=int, default=0,
                     help="use rule policy to fill the experience replay buffer at the beginning, 1:True; 0:False")
 parser.add_argument("--warm_start_epoch_number", dest="warm_start_epoch_number", type=int, default=20,
                     help="the number of epoch of warm starting.")
@@ -26,6 +26,8 @@ parser.add_argument("--batch_size", dest="batch_size", type=int, default=30, hel
 parser.add_argument("--epsilon", dest="epsilon", type=float, default=0.1, help="the greedy of DQN")
 parser.add_argument("--gamma", dest="gamma", type=float, default=1.0, help="The discount factor of immediate reward.")
 parser.add_argument("--train_mode", dest="train_mode", type=int, default=1, help="training mode? True:1 or False:0")
+parser.add_argument("--prioritized_replay", dest="prioritized_replay", type=bool, default=True,
+                    help="whether to use prioritized replay in memory")
 
 # TODO: Save model, performance and dialogue content ? And what is the path if yes? #这部分还没写
 parser.add_argument("--save_performance", dest="save_performance", type=int, default=1,
@@ -39,8 +41,8 @@ parser.add_argument("--dqn_learning_rate", dest="dqn_learning_rate", type=float,
                     help="the learning rate of dqn.")
 parser.add_argument("--saved_model", dest="saved_model", type=str,
                     default="/home/yanking/disk1/nizepu/govChatbot/model/dqn/checkpoint/model_d_agent_dqn_s1.0_r36.4_t3.36_wd0.0_e49.pkl")
-parser.add_argument("--max_turn", dest="max_turn", type=int, default=6, help="the max turn in one episode.")
-parser.add_argument("--input_size_dqn", dest="input_size_dqn", type=int, default=1119, help="the input_size of DQN.")
+parser.add_argument("--max_turn", dest="max_turn", type=int, default=10, help="the max turn in one episode.")
+parser.add_argument("--input_size_dqn", dest="input_size_dqn", type=int, default=1123, help="the input_size of DQN.")
 args = parser.parse_args()
 parameter = vars(args)
 print(json.dumps(parameter, indent=2))
@@ -49,6 +51,7 @@ checkpoint_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mode
 # performance_save_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model/dqn/learning_rate/")
 if not os.path.exists(checkpoint_path):
     os.makedirs(checkpoint_path)
+
 
 # if not os.path.exists(performance_save_path):
 #     os.makedirs(performance_save_path)
