@@ -4,18 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="244d3ec2-5300-4743-9e84-8ecc075ace91" name="变更" comment="加入画图 改max_turn">
-      <change afterPath="$PROJECT_DIR$/data/PrioritizedReplay.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/policy_learning/actor_critic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/govChatbot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/govChatbot.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="244d3ec2-5300-4743-9e84-8ecc075ace91" name="变更" comment="增加优先经验回放">
+      <change afterPath="$PROJECT_DIR$/model/dqn/learning_rate/learning_rate_d_e_agent_T8_lr0.001_RFS50_RFF-30_RFNCY-10_RFIRS30_gamma1.0_epsilon0.1_RIDNone_499.p" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/agent.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/gym_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/ploter.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/replay_memory.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/torch.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/zfilter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/agent/agent_dqn.py" beforeDir="false" afterPath="$PROJECT_DIR$/agent/agent_dqn.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dialogue_configuration.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialogue_configuration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dialogue_manager/dialogue_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialogue_manager/dialogue_manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/policy_learning/actor_critic.py" beforeDir="false" afterPath="$PROJECT_DIR$/policy_learning/actor_critic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/run.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/running_steward.py" beforeDir="false" afterPath="$PROJECT_DIR$/running_steward.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/save_test.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,17 +56,19 @@
     </file-type-list>
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$USER_HOME$/Library/Caches/JetBrains/PyCharm2021.3/remote_sources/-257198115/2007242572/torch/nn/functional.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/policy_learning/dqn_torch.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/Library/Caches/JetBrains/PyCharm2021.3/remote_sources/-257198115/463515752/os.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/run.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/running_steward.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/agent/agent_rule.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/policy_learning/actor_critic.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/agent/agent_dqn.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/agent/agent.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Library/Caches/JetBrains/PyCharm2021.3/remote_sources/-257198115/2007242572/torch/nn/functional.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/policy_learning/dqn_torch.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/data/goal_set.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/dialogue_configuration.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/user_simulator/user.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/agent/agent_rule.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/agent/agent_dqn.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/dialogue_manager/dialogue_manager.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/agent/agent.py" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -87,7 +92,7 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/policy_learning" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/utils" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -96,32 +101,16 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/utils" />
+      <recent name="$PROJECT_DIR$/model/dqn/learning_rate" />
+      <recent name="$PROJECT_DIR$/other" />
       <recent name="$PROJECT_DIR$/policy_learning" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/utils" />
+    </key>
   </component>
-  <component name="RunManager" selected="Python.run">
-    <configuration name="dialogue_manager" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="govChatbot" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/dialogue_manager" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dialogue_manager/dialogue_manager.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.ploter">
     <configuration name="generate_goalset" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="govChatbot" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -136,6 +125,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/data/generate_goalset.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="ploter" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="govChatbot" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/other" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/utils/ploter.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -211,19 +222,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.dialogue_manager" />
       <item itemvalue="Python.generate_goalset" />
       <item itemvalue="Python.run" />
       <item itemvalue="Python.slot_set" />
       <item itemvalue="Python.running_steward" />
+      <item itemvalue="Python.ploter" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.ploter" />
         <item itemvalue="Python.run" />
         <item itemvalue="Python.running_steward" />
         <item itemvalue="Python.slot_set" />
         <item itemvalue="Python.generate_goalset" />
-        <item itemvalue="Python.dialogue_manager" />
       </list>
     </recent_temporary>
   </component>
@@ -252,7 +263,7 @@
       <workItem from="1652173640820" duration="598000" />
       <workItem from="1652320454957" duration="7319000" />
       <workItem from="1652686672882" duration="4551000" />
-      <workItem from="1653379183151" duration="1209000" />
+      <workItem from="1653379183151" duration="16711000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1650299996268</created>
@@ -289,7 +300,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651892956785</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="增加优先经验回放">
+      <created>1653382246966</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1653382246966</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -318,7 +336,8 @@
     <MESSAGE value="增加episode结束后agent的动作" />
     <MESSAGE value="调整权重 重新生成slot_set以及goal_set" />
     <MESSAGE value="加入画图 改max_turn" />
-    <option name="LAST_COMMIT_MESSAGE" value="加入画图 改max_turn" />
+    <MESSAGE value="增加优先经验回放" />
+    <option name="LAST_COMMIT_MESSAGE" value="增加优先经验回放" />
     <option name="GROUP_MULTIFILE_MERGE_BY_DIRECTORY" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -335,24 +354,14 @@
           <option name="timeStamp" value="35" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/running_steward.py</url>
-          <line>139</line>
-          <option name="timeStamp" value="39" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/running_steward.py</url>
-          <line>247</line>
-          <option name="timeStamp" value="56" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/running_steward.py</url>
-          <line>217</line>
-          <option name="timeStamp" value="57" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/dialogue_manager/dialogue_manager.py</url>
           <line>137</line>
           <option name="timeStamp" value="60" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/utils/ploter.py</url>
+          <line>51</line>
+          <option name="timeStamp" value="71" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -360,9 +369,10 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/govChatbot$generate_goalset.coverage" NAME="generate_goalset 覆盖结果" MODIFIED="1651147689169" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/data" />
     <SUITE FILE_PATH="coverage/govChatbot$running_steward.coverage" NAME="running_steward 覆盖结果" MODIFIED="1651892319169" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/govChatbot$ploter.coverage" NAME="ploter 覆盖结果" MODIFIED="1653446108011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/other" />
     <SUITE FILE_PATH="coverage/govChatbot$dialogue_manager.coverage" NAME="dialogue_manager 覆盖结果" MODIFIED="1650349490558" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dialogue_manager" />
     <SUITE FILE_PATH="coverage/govChatbot$slot_set.coverage" NAME="slot_set 覆盖结果" MODIFIED="1651147764365" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/data" />
     <SUITE FILE_PATH="coverage/govChatbot$save_test.coverage" NAME="save_test 覆盖结果" MODIFIED="1650287766027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/govChatbot$run.coverage" NAME="run 覆盖结果" MODIFIED="1652332597043" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/govChatbot$run.coverage" NAME="run 覆盖结果" MODIFIED="1653386162717" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

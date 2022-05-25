@@ -23,7 +23,7 @@ class RunningSteward(object):
         user = User(parameter=parameter)
         agent = AgentRule(parameter=parameter)
         self.dialogue_manager = DialogueManager(user=user, agent=agent, parameter=parameter)
-        self.best_result = {"success_rate": 0.0, "average_reward": 0.0, "average_turn": 0, "average_wrong_service": 10}
+        self.best_result = {"success_rate": 0.0, "average_reward": 0.0, "average_turn": 0, "average_wrong_disease": 10}
         self.checkpoint_path = checkpoint_path
         self.learning_curve = {}
 
@@ -100,9 +100,9 @@ class RunningSteward(object):
         absolute_success_rate = float("%.3f" % (float(absolute_success_count) / epoch_size))
         average_reward = float("%.3f" % (float(total_reward) / epoch_size))
         average_turn = float("%.3f" % (float(total_turns) / epoch_size))
-        average_wrong_service = float("%.3f" % (float(inform_wrong_service_count) / epoch_size))
+        average_wrong_disease = float("%.3f" % (float(inform_wrong_service_count) / epoch_size))
         res = {"success_rate": success_rate, "average_reward": average_reward, "average_turn": average_turn,
-               "average_wrong_service": average_wrong_service, "ab_success_rate": absolute_success_rate}
+               "average_wrong_disease": average_wrong_disease, "ab_success_rate": absolute_success_rate}
         return res
 
     def warm_start(self, agent, epoch_number):
@@ -118,7 +118,7 @@ class RunningSteward(object):
             res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=1)
             print("%3d simulation SR %s, ABSR %s,ave reward %s, ave turns %s, ave wrong service %s" % (
                 index, res['success_rate'], res["ab_success_rate"], res['average_reward'], res['average_turn'],
-                res["average_wrong_service"]))
+                res["average_wrong_disease"]))
 
     def simulate(self, agent, epoch_number, train_mode):
         """
@@ -140,12 +140,12 @@ class RunningSteward(object):
                 res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
                 print("Train %3d simulation SR %s, ABSR %s,ave reward %s, ave turns %s, ave wrong service %s" % (
                     index, res['success_rate'], res["ab_success_rate"], res['average_reward'], res['average_turn'],
-                    res["average_wrong_service"]))
+                    res["average_wrong_disease"]))
                 self.dialogue_manager.train()
                 result = self.evaluate_model(index)
                 if result["success_rate"] >= self.best_result["success_rate"] and \
-                        result["average_wrong_service"] <= self.best_result[
-                    "average_wrong_service"] and train_mode == 1:
+                        result["average_wrong_disease"] <= self.best_result[
+                    "average_wrong_disease"] and train_mode == 1:
                     # self.dialogue_manager.experience_replay_pool = deque(
                     #     maxlen=self.parameter.get("experience_replay_pool_size"))
                     if self.parameter.get('prioritized_replay'):
@@ -204,21 +204,21 @@ class RunningSteward(object):
         absolute_success_rate = float("%.3f" % (float(absolute_success_count) / evaluate_epoch_number))
         average_reward = float("%.3f" % (float(total_reward) / evaluate_epoch_number))
         average_turn = float("%.3f" % (float(total_truns) / evaluate_epoch_number))
-        average_wrong_service = float("%.3f" % (float(inform_wrong_service_count) / evaluate_epoch_number))
+        average_wrong_disease = float("%.3f" % (float(inform_wrong_service_count) / evaluate_epoch_number))
         res = {"success_rate": success_rate, "average_reward": average_reward, "average_turn": average_turn,
-               "average_wrong_service": average_wrong_service, "ab_success_rate": absolute_success_rate}
+               "average_wrong_disease": average_wrong_disease, "ab_success_rate": absolute_success_rate}
         self.learning_curve.setdefault(index, dict())
         self.learning_curve[index]["success_rate"] = success_rate
         self.learning_curve[index]["average_reward"] = average_reward
         self.learning_curve[index]["average_turn"] = average_turn
-        self.learning_curve[index]["average_wrong_service"] = average_wrong_service
+        self.learning_curve[index]["average_wrong_disease"] = average_wrong_disease
         if index % 10 == 0:
             self.__print_run_info__()
         if index % 10 == 9 and save_performance == 1:
             self.__dump_performance__(epoch_index=index)
         print("Eval %3d simulation SR %s, ABSR %s, ave reward %s, ave turns %s, ave wrong service %s" % (
             index, res['success_rate'], res["ab_success_rate"], res['average_reward'], res['average_turn'],
-            res["average_wrong_service"]))
+            res["average_wrong_disease"]))
         return res
 
     def __dump_performance__(self, epoch_index):

@@ -41,8 +41,8 @@ parser.add_argument("--dqn_learning_rate", dest="dqn_learning_rate", type=float,
                     help="the learning rate of dqn.")
 parser.add_argument("--saved_model", dest="saved_model", type=str,
                     default="/home/yanking/disk1/nizepu/govChatbot/model/dqn/checkpoint/model_d_agent_dqn_s1.0_r36.4_t3.36_wd0.0_e49.pkl")
-parser.add_argument("--max_turn", dest="max_turn", type=int, default=10, help="the max turn in one episode.")
-parser.add_argument("--input_size_dqn", dest="input_size_dqn", type=int, default=1123, help="the input_size of DQN.")
+parser.add_argument("--max_turn", dest="max_turn", type=int, default=8, help="the max turn in one episode.")
+parser.add_argument("--input_size_dqn", dest="input_size_dqn", type=int, default=1121, help="the input_size of DQN.")
 args = parser.parse_args()
 parameter = vars(args)
 print(json.dumps(parameter, indent=2))
