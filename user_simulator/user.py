@@ -1,10 +1,13 @@
 # -*- coding:utf-8 -*-
 
 import copy
+import json
 import random
 
 import dialogue_configuration
-from data.goal_set import goal_set
+
+
+# from data.goal_set import goal_set
 
 
 class User(object):
@@ -27,7 +30,10 @@ class User(object):
             "explicit_inform_slots": {},  # For slots that belong to goal["explicit_inform_slots"]
             "implicit_inform_slots": {}  # For slots that belong to goal["implicit_inform_slots"]
         }
-        self.goal_set = random.choice(goal_set)
+        with open('data/goal_set.json', 'r') as f:
+            goal_set = json.load(f)
+
+        self.goal_set = goal_set[str(random.randint(0, len(goal_set) - 1))]
         self.goal = self.goal_set["goal"]
         # print(self.goal)
         self.episode_over = False
@@ -75,7 +81,6 @@ class User(object):
         user_action = self._assemble_user_action()
         reward = self._reward_function()
         return user_action, reward, self.episode_over, self.dialogue_status
-
 
     def _response_request(self, agent_action):
         for slot in agent_action["request_slots"].keys():

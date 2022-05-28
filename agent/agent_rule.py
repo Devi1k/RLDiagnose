@@ -1,24 +1,28 @@
 # -*- coding: utf-8 -*-
 
 import copy
+import json
 
 import dialogue_configuration
 from agent.agent import Agent
-from data.configuration import requirement_weight, service, slot_max
+from data.configuration import requirement_weight, service
 
 
 class AgentRule(Agent):
     def __init__(self, parameter):
         super(AgentRule, self).__init__(parameter=parameter)
+        with open('data/slot_max_weight.json', 'r') as f:
+            slot_max_weight = json.load(f)
+        self.slot_max = list(slot_max_weight.keys())
 
     def next(self, state, turn, greedy_strategy, episode_over=False):
         score_max = 0
         max = 0
         score = []
-        for i in range(len(slot_max)):
+        for i in range(len(self.slot_max)):
             score.append(0)
         inform_slots = list(state["current_slots"]["inform_slots"].keys())
-        for i in range(len(slot_max)):
+        for i in range(len(self.slot_max)):
             for j in range(len(inform_slots)):
                 if inform_slots[j] in requirement_weight[i].keys():  # 如果该事项包含的slots中有inform的slot，该事项的score就加上该slot的权重
                     if state["current_slots"]["inform_slots"][inform_slots[j]] is True:
@@ -32,7 +36,7 @@ class AgentRule(Agent):
                 score_max = score[i]
                 max = i
         candidate_service = service[max]
-        candidate_requirement = slot_max[max]
+        candidate_requirement = self.slot_max[max]
         self.agent_action["request_slots"].clear()
         self.agent_action["inform_slots"].clear()
         self.agent_action["turn"] = turn

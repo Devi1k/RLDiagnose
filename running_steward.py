@@ -6,8 +6,9 @@ import pickle
 from collections import deque
 
 import dialogue_configuration
+from agent.agent_dqn import AgentDQN
 from agent.agent_rule import AgentRule
-from data.PrioritizedReplay import PrioritizedReplayBuffer
+from policy_learning.PrioritizedReplay import PrioritizedReplayBuffer
 from dialogue_manager.dialogue_manager import DialogueManager
 from user_simulator.user import User
 
@@ -21,7 +22,8 @@ class RunningSteward(object):
         self.epoch_size = parameter.get("epoch_size")
         self.parameter = parameter
         user = User(parameter=parameter)
-        agent = AgentRule(parameter=parameter)
+        # agent = AgentRule(parameter=parameter)
+        agent = AgentDQN(parameter=parameter)
         self.dialogue_manager = DialogueManager(user=user, agent=agent, parameter=parameter)
         self.best_result = {"success_rate": 0.0, "average_reward": 0.0, "average_turn": 0, "average_wrong_disease": 10}
         self.checkpoint_path = checkpoint_path

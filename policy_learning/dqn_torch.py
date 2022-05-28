@@ -594,10 +594,10 @@ class DQN2(object):
         success_rate = model_performance["success_rate"]
         average_reward = model_performance["average_reward"]
         average_turn = model_performance["average_turn"]
-        average_wrong_service = model_performance["average_wrong_service"]
+        average_wrong_disease = model_performance["average_wrong_disease"]
         model_file_name = os.path.join(checkpoint_path, "model_d" + "_agent" + "_dqn" + "_s" + str(success_rate) + "_r" + str(
             average_reward) + "_t" + str(average_turn) + "_wd" + str(
-            average_wrong_service) + "_e" + str(episodes_index) + ".pkl")
+            average_wrong_disease) + "_e" + str(episodes_index) + ".pkl")
 
         torch.save(self.current_net.state_dict(), model_file_name)
 

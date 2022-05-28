@@ -3,11 +3,12 @@
 Basic agent class that other complicated agent, e.g., rule-based agent, DQN-based agent.
 """
 import copy
+import json
 
 import numpy as np
 
 import dialogue_configuration
-from data.configuration import slot_max_weight, service, slot_set, action_set
+from data.configuration import  service, action_set
 
 
 # from other.gen_goalset import service,slot_set,action_set  #用这种方法的时候注释掉48.49行
@@ -17,6 +18,11 @@ class Agent(object):
     """
 
     def __init__(self, parameter):
+        with open('data/slot_set.json','r') as f:
+            slot_set = json.load(f)
+        with open('data/slot_max_weight.json', 'r') as f:
+            slot_max_weight = json.load(f)
+        self.slot_max_weight = slot_max_weight
         self.slot_set = slot_set
         self.action_set = action_set
         self.parameter = parameter
@@ -49,7 +55,7 @@ class Agent(object):
             {'speaker': 'agent', 'action': dialogue_configuration.THANKS, 'inform_slots': {}, 'request_slots': {}}
         ]
         #   Adding the inform actions and request actions.
-        for slot in sorted(slot_max_weight.keys()):
+        for slot in sorted(self.slot_max_weight.keys()):
             feasible_actions.append({'speaker': 'agent', 'action': 'request', 'inform_slots': {},
                                      'request_slots': {slot: dialogue_configuration.VALUE_UNKNOWN}})
         # Services as actions.
@@ -81,7 +87,7 @@ class Agent(object):
 
     def state_to_representation_last(self, state):
         current_slots = copy.deepcopy(state["current_slots"]["inform_slots"])
-        current_slots_rep = np.zeros(len(slot_set.keys()))
+        current_slots_rep = np.zeros(len(self.slot_set.keys()))
         for slot in current_slots.keys():
             # 用权重
             # current_slots_rep[self.slot_set[slot]] =current_slots[slot]

@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
-
+import copy
 import random
 from collections import deque
 
 import dialogue_configuration
 from agent.agent_dqn import AgentDQN
-from data.PrioritizedReplay import PrioritizedReplayBuffer
+from policy_learning.PrioritizedReplay import PrioritizedReplayBuffer
 from state_tracker.state_tracker import StateTracker
 
 
@@ -23,6 +23,8 @@ class DialogueManager(object):
         else:
             self.experience_replay_pool = deque(maxlen=self.parameter.get("experience_replay_pool_size"))
         self.inform_wrong_service_count = 0
+        self.trajectory = []
+        self.trajectory_pool = deque(maxlen=self.parameter.get("trajectory_pool_size", 100))
 
     def initialize(self, train_mode=1, epoch_index=None, greedy_strategy=1):
         self.state_tracker.initialize()
@@ -99,6 +101,9 @@ class DialogueManager(object):
                 )
         else:
             pass
+
+        if episode_over is True:
+            self.trajectory_pool.append(copy.deepcopy(self.trajectory))
         prev_state = _state
 
         return reward, episode_over, dialogue_status, agent_action, action_index, prev_state
@@ -107,6 +112,7 @@ class DialogueManager(object):
         state = self.state_tracker.agent.state_to_representation_last(state)
         next_state = self.state_tracker.agent.state_to_representation_last(next_state)
         self.experience_replay_pool.append((state, agent_action, reward, next_state, episode_over))  # 每两个turn添加一次
+        self.trajectory.append((state, agent_action, reward, next_state, episode_over))
 
     def record_prioritized_training_sample(self, state, agent_action, reward, next_state, episode_over, TD_error):
         state_rep = self.state_tracker.agent.state_to_representation_last(state=state)
@@ -141,3 +147,16 @@ class DialogueManager(object):
         print("cur bellman err %.4f, experience replay pool %s" % (
             float(cur_bellman_err) / len(self.experience_replay_pool), len(self.experience_replay_pool)))
         # print("cur bellman err %.4f)
+
+
+    def __train_actor_critic(self):
+        """
+        Train actor-critic.
+        :return:
+        """
+        trajectory_pool = list(self.trajectory_pool)
+        batch_size = self.parameter.get("batch_size", 16)
+        for index in range(0, len(self.trajectory_pool), batch_size):
+            stop = max(len(self.trajectory_pool), index + batch_size)
+            batch_trajectory = trajectory_pool[index:stop]
+            self.state_tracker.agent.train(trajectories=batch_trajectory)
