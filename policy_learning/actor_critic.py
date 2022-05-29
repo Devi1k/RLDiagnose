@@ -26,7 +26,7 @@ class ActorCritic(object):
             b_next_obs.extend(next_obs)
             b_r.extend(r)
 
-        td_error = self.critic.learn(b_obs, b_r, b_next_obs, b_mask).item()  # gradient = grad[r + gamma * V(s_) - V(s)]
+        td_error = self.critic.learn(b_obs, b_r, b_next_obs, b_mask)  # gradient = grad[r + gamma * V(s_) - V(s)]
         self.actor.learn(b_obs, b_acts, td_error)  # true_gradient = grad[logPi(s,a) * td_error]
 
     def __process_trajectory__(self, trajectory):
@@ -59,14 +59,14 @@ class Actor(nn.Module):
             'cpu')
 
     def forward(self, s):
-        s = torch.tensor(s, dtype=torch.float32, device=next(self.parameters()).device)
+        s = s.float().to(self.device)
         for affine in self.affine_layers:
             s = self.activation(affine(s))
-        action_prob = torch.softmax(self.action_head(s), dim=0)
+        action_prob = torch.softmax(self.action_head(s), dim=1)
         return action_prob
 
     def learn(self, states, actions, td_error):
-        states = torch.from_numpy(np.stack(states)).to(torch.float64).to(self.device)
+        states = torch.from_numpy(np.stack(states)).to(torch.float64).to(self.device).squeeze()
         # actions = torch.from_numpy(np.stack(actions)).to(torch.float64).to(self.device)
 
         log_probs = self.get_log_prob(states)
@@ -95,49 +95,66 @@ class Actor(nn.Module):
 
     def select_action(self, x):
         action_prob = self.forward(x)
-        action_distribution = Categorical(action_prob)
-        action = action_distribution.sample()
+        action = action_prob.multinomial(1)
         return action
 
 
 class Critic(nn.Module):
-    def __init__(self, n_features, param, lr=0.01, gamma=0.9, l2_reg=1e-3, **kwargs):
+    def __init__(self, n_features, param, lr=0.01, gamma=0.9, l2_reg=1e-3, hidden_size=(128, 128), **kwargs):
         super().__init__(**kwargs)
-        self.l1 = nn.Linear(n_features, 30)  # relu
-        self.v = nn.Linear(30, 1)  #
+        # self.l1 = nn.Linear(n_features, 30)  # relu
+        # self.v = nn.Linear(30, 1)  #
+        self.affine_layers = nn.ModuleList()
+        last_dim = n_features
+        for nh in hidden_size:
+            self.affine_layers.append(nn.Linear(last_dim, nh))
+            last_dim = nh
+
+        self.value_head = nn.Linear(last_dim, 1)
+        self.value_head.weight.data.mul_(0.1)
+        self.value_head.bias.data.mul_(0.0)
+
+        self.activation = torch.relu
         self.optim = optim.Adam(self.parameters(), lr)
         self.gamma = gamma
         self.l2_reg = l2_reg
+        self.loss = torch.nn.MSELoss()
         self.device = torch.device('cuda',
                                    index=param.get("gpu_index", 1)) if torch.cuda.is_available() else torch.device(
             'cpu')
 
     def forward(self, s):
-        s = torch.tensor(s, dtype=torch.float32, device=next(self.parameters()).device)[None]
-        return self.v(self.l1(s).relu())
+        s = s.float().to(self.device)
+        for affine in self.affine_layers:
+            s = self.activation(affine(s))
+
+        value = self.value_head(s)
+        return value
+        # return self.v(self.l1(s).relu())
 
     def learn(self, s, r, s_, masks):
-        s = torch.from_numpy(np.stack(s)).to(torch.float64).to(self.device)
-        r = torch.from_numpy(np.stack(r)).to(torch.float64).to(self.device)
-        s_ = torch.from_numpy(np.stack(s_)).to(torch.float64).to(self.device)
-        masks = torch.from_numpy(np.stack(masks)).to(torch.float64).to(self.device)
+        s = torch.from_numpy(np.stack(s)).to(torch.float64).to(self.device).squeeze()
+        r = torch.from_numpy(np.stack(r)).to(torch.float64).to(self.device).squeeze()
+        s_ = torch.from_numpy(np.stack(s_)).to(torch.float64).to(self.device).squeeze()
+        masks = torch.from_numpy(np.stack(masks)).to(torch.float64).to(self.device).squeeze()
 
         with torch.no_grad():
-            v_ = self.forward(s_).squeeze()
-            v = self.forward(s).squeeze()
+            v_ = self.forward(s_).squeeze(0)
+            v = self.forward(s).squeeze(0)
         # tensor_type = type(r)
         # advantages = tensor_type(r.size(0), 1)
-        advantages = []
+        advantages, td_target = [], []
         for i in range(r.size(0)):
             advantages.append(r[i] + self.gamma * v_[i] * masks[i] - v[i])
-        advantages = torch.from_numpy(np.stack(advantages)).to(torch.float64).to(self.device)
-        advantages = (advantages - advantages.mean()) / advantages.std()
-        td_error = torch.mean(advantages)
-        loss = td_error.square()
+            td_target.append(r[i] + self.gamma * v_[i] * masks[i])
+        advantages = torch.from_numpy(np.stack(advantages)).to(torch.float64).to(self.device).squeeze()
+        td_target = torch.from_numpy(np.stack(td_target)).to(torch.float64).to(self.device)
+        advantages = ((advantages - advantages.mean()) / advantages.std()).squeeze()
+        loss = self.loss(v, td_target)
         for param in self.parameters():
             loss += param.pow(2).sum() * self.l2_reg
 
         loss.backward()
         self.optim.step()
         self.optim.zero_grad()
-        return td_error
+        return advantages

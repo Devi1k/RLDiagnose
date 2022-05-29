@@ -6,10 +6,9 @@ import pickle
 from collections import deque
 
 import dialogue_configuration
-from agent.agent_dqn import AgentDQN
 from agent.agent_rule import AgentRule
-from policy_learning.PrioritizedReplay import PrioritizedReplayBuffer
 from dialogue_manager.dialogue_manager import DialogueManager
+from policy_learning.PrioritizedReplay import PrioritizedReplayBuffer
 from user_simulator.user import User
 
 
@@ -22,9 +21,10 @@ class RunningSteward(object):
         self.epoch_size = parameter.get("epoch_size")
         self.parameter = parameter
         user = User(parameter=parameter)
-        # agent = AgentRule(parameter=parameter)
-        agent = AgentDQN(parameter=parameter)
+        agent = AgentRule(parameter=parameter)
+        # agent = AgentDQN(parameter=parameter['DQN'])
         self.dialogue_manager = DialogueManager(user=user, agent=agent, parameter=parameter)
+        self.eval_epoch_size = parameter['evaluate_epoch_number']
         self.best_result = {"success_rate": 0.0, "average_reward": 0.0, "average_turn": 0, "average_wrong_disease": 10}
         self.checkpoint_path = checkpoint_path
         self.learning_curve = {}
@@ -40,9 +40,11 @@ class RunningSteward(object):
         total_reward = 0
         total_turns = 0
         inform_wrong_service_count = 0
+        result = dict()
         for epoch_index in range(0, epoch_size, 1):
+            per_epoch = dict()
             agent_action, action_index, prev_state = self.dialogue_manager.initialize(
-                train_mode=self.parameter.get("train_mode"))
+                train_mode=self.parameter["train_mode"])
             episode_over = False
             while episode_over is False:
                 # reward, episode_over, dialogue_status = self.dialogue_manager.next(save_record=True,
@@ -65,39 +67,55 @@ class RunningSteward(object):
                 success_count += 1
                 if self.dialogue_manager.inform_wrong_service_count == 0:
                     absolute_success_count += 1
-            goal = self.dialogue_manager.state_tracker.user.get_goal()
-            item = json.dumps(goal, ensure_ascii=False, indent=4)
-            index = json.dumps(epoch_index)
-            if epoch_index == 0:
-                if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_SUCCESS:
-                    with open("success.json", "w", encoding='utf-8') as f:
-                        f.write("goal_set=[\n")
-                        f.write("{'consult_id':" + index + ",\n")
-                        f.write("'goal':" + item + "},\n")
-                if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_FAILED:
-                    with open("fail.json", "w", encoding='utf-8') as f:
-                        f.write("goal_set=[\n")
-                        f.write("{'consult_id':" + index + ",\n")
-                        f.write("'goal':" + item + ",\n")
-            elif epoch_index == epoch_size - 1:
-                if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_SUCCESS:
-                    with open("success.json", "w+", encoding='utf-8') as f:
-                        f.write("{'consult_id':" + index + ",\n")
-                        f.write("'goal':" + item + "}]\n")
-                if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_FAILED:
-                    with open("fail.json", "w+", encoding='utf-8') as f:
-                        f.write("{'consult_id':" + index + ",\n")
-                        f.write("'goal':" + item + "]\n")
-            else:
-                if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_SUCCESS:
-                    with open("success.json", "w+", encoding='utf-8') as f:
-                        f.write("{'consult_id':" + index + ",\n")
-                        f.write("'goal':" + item + "},\n")
-                if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_FAILED:
-                    with open("fail.json", "w+", encoding='utf-8') as f:
-                        f.write("{'consult_id':" + index + ",\n")
-                        f.write("'goal':" + item + ",\n")
+            goal, goal_id = self.dialogue_manager.state_tracker.user.get_goal()
+            # item = json.dumps(goal, ensure_ascii=False, indent=4)
+            # index = json.dumps(epoch_index)
+            per_epoch['consult_id'] = goal_id
+            per_epoch['goal'] = goal
+            if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_SUCCESS:
+                per_epoch['status'] = 'success'
+            if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_FAILED:
+                per_epoch['status'] = 'failed'
+            try:
+                if agent_action['action'] != 'inform':
+                    per_epoch['perdict'] = prev_state['agent_action']['inform_slots']['service']
+                else:
+                    per_epoch['perdict'] = agent_action['inform_slots']['service']
+            except KeyError:
+                print(prev_state)
+            result[epoch_index] = per_epoch
 
+            # if epoch_index == 0:
+            #     if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_SUCCESS:
+            #         with open("result.json", "w", encoding='utf-8') as f:
+            #             f.write("goal_set=[\n")
+            #             f.write("{'consult_id':" + index + ",\n")
+            #             f.write("'goal':" + item + "},\n")
+            #     if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_FAILED:
+            #         with open("fail.json", "w", encoding='utf-8') as f:
+            #             f.write("goal_set=[\n")
+            #             f.write("{'consult_id':" + index + ",\n")
+            #             f.write("'goal':" + item + ",\n")
+            # elif epoch_index == epoch_size - 1:
+            #     if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_SUCCESS:
+            #         with open("success.json", "w+", encoding='utf-8') as f:
+            #             f.write("{'consult_id':" + index + ",\n")
+            #             f.write("'goal':" + item + "}]\n")
+            #     if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_FAILED:
+            #         with open("fail.json", "w+", encoding='utf-8') as f:
+            #             f.write("{'consult_id':" + index + ",\n")
+            #             f.write("'goal':" + item + "]\n")
+            # else:
+            #     if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_SUCCESS:
+            #         with open("success.json", "w+", encoding='utf-8') as f:
+            #             f.write("{'consult_id':" + index + ",\n")
+            #             f.write("'goal':" + item + "},\n")
+            #     if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_FAILED:
+            #         with open("fail.json", "w+", encoding='utf-8') as f:
+            #             f.write("{'consult_id':" + index + ",\n")
+            #             f.write("'goal':" + item + ",\n")
+        with open('result.json', 'w') as f:
+            json.dump(result, f, indent=4, ensure_ascii=False)
         success_rate = float("%.3f" % (float(success_count) / epoch_size))
         absolute_success_rate = float("%.3f" % (float(absolute_success_count) / epoch_size))
         average_reward = float("%.3f" % (float(total_reward) / epoch_size))
@@ -150,18 +168,22 @@ class RunningSteward(object):
                     "average_wrong_disease"] and train_mode == 1:
                     # self.dialogue_manager.experience_replay_pool = deque(
                     #     maxlen=self.parameter.get("experience_replay_pool_size"))
-                    if self.parameter.get('prioritized_replay'):
+                    if self.parameter['prioritized_replay']:
                         self.dialogue_manager.experience_replay_pool = PrioritizedReplayBuffer(
-                            buffer_size=self.parameter.get("experience_replay_pool_size"))
+                            buffer_size=self.parameter["experience_replay_pool_size"])
                     else:
-                        self.dialogue_manager.experience_replay_pool = deque(maxlen=self.parameter.get("experience_replay_pool_size"))
+                        self.dialogue_manager.experience_replay_pool = deque(
+                            maxlen=self.parameter["experience_replay_pool_size"])
                     self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
                     self.dialogue_manager.state_tracker.agent.save_model(model_performance=result, episodes_index=index,
                                                                          checkpoint_path=self.checkpoint_path)
                     print("The model was saved.")
                     self.best_result = copy.deepcopy(result)
         else:
-            self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
+            res = self.simulation_epoch(epoch_size=self.eval_epoch_size, train_mode=train_mode)
+            print("Eval simulation SR %s, ABSR %s,ave reward %s, ave turns %s, ave wrong service %s" % (
+                res['success_rate'], res["ab_success_rate"], res['average_reward'], res['average_turn'],
+                res["average_wrong_disease"]))
 
     def evaluate_model(self, index):
         """
@@ -169,19 +191,19 @@ class RunningSteward(object):
         :param index: int, the simulation index.
         :return: a dict of evaluation results including success rate, average reward, average number of wrong services.
         """
-        save_performance = self.parameter.get("save_performance")
+        save_performance = self.parameter["save_performance"]
 
         train_mode = self.parameter.get("train_mode")
         success_count = 0
         absolute_success_count = 0
         total_reward = 0
         total_truns = 0
-        evaluate_epoch_number = self.parameter.get("evaluate_epoch_number")
+        evaluate_epoch_number = self.parameter["evaluate_epoch_number"]
         # evaluate_epoch_number = len(self.dialogue_manager.state_tracker.user.goal_set["test"])
         inform_wrong_service_count = 0
         for epoch_index in range(0, evaluate_epoch_number, 1):
             agent_action, action_index, prev_state = self.dialogue_manager.initialize(
-                train_mode=self.parameter.get("train_mode"))
+                train_mode=self.parameter["train_mode"])
             episode_over = False
             while episode_over is False:
                 reward, episode_over, dialogue_status, _agent_action, _action_index, _prev_state = self.dialogue_manager.next(
@@ -216,7 +238,7 @@ class RunningSteward(object):
         self.learning_curve[index]["average_wrong_disease"] = average_wrong_disease
         if index % 10 == 0:
             self.__print_run_info__()
-        if index % 10 == 9 and save_performance == 1:
+        if index % 10 == 9 and save_performance:
             self.__dump_performance__(epoch_index=index)
         print("Eval %3d simulation SR %s, ABSR %s, ave reward %s, ave turns %s, ave wrong service %s" % (
             index, res['success_rate'], res["ab_success_rate"], res['average_reward'], res['average_turn'],
@@ -224,8 +246,11 @@ class RunningSteward(object):
         return res
 
     def __dump_performance__(self, epoch_index):
-
-        lr = self.parameter.get("dqn_learning_rate")
+        if self.parameter['agent_id'] == 1:
+            lr = self.parameter["dqn_learning_rate"]
+        elif self.parameter['agent_id'] == 2:
+            lr_a = self.parameter['AC']["LR_A"]
+            lr_c = self.parameter["AC"]["LR_C"]
         # reward_for_success = self.parameter.get("reward_for_success")
         # reward_for_fail = self.parameter.get("reward_for_fail")
         # reward_for_not_come_yet = self.parameter.get("reward_for_not_come_yet")
@@ -235,11 +260,11 @@ class RunningSteward(object):
         reward_for_not_come_yet = dialogue_configuration.REWARD_FOR_NOT_COME_YET
         reward_for_inform_right_symptom = dialogue_configuration.REWARD_FOR_INFORM_RIGHT_SLOT
 
-        max_turn = self.parameter.get("max_turn")
+        max_turn = self.parameter["max_turn"]
         # minus_left_slots = self.parameter.get("minus_left_slots")
-        gamma = self.parameter.get("gamma")
-        epsilon = self.parameter.get("epsilon")
-        run_id = self.parameter.get('run_id')
+        gamma = self.parameter["gamma"]
+        epsilon = self.parameter["epsilon"]
+        run_id = self.parameter['run_id']
 
         file_name = "learning_rate_d" + "_e" + "_agent" + "_T" + str(max_turn) + "_lr" + str(lr) + "_RFS" + str(
             reward_for_success) + \
@@ -247,14 +272,14 @@ class RunningSteward(object):
             reward_for_inform_right_symptom) + "_gamma" + str(gamma) + "_epsilon" + str(
             epsilon) + "_RID" + str(run_id) + "_" + str(epoch_index) + ".p"
 
-        pickle.dump(file=open(self.parameter.get("performance_save_path") + file_name, "wb"), obj=self.learning_curve)
+        pickle.dump(file=open(self.parameter["performance_save_path"] + file_name, "wb"), obj=self.learning_curve)
 
     def __print_run_info__(self):
         # print(json.dumps(self.parameter, indent=2))
         # agent_id = self.parameter.get("agent_id")
         # dqn_id = self.parameter.get("dqn_id")
         # service_number = self.parameter.get("service_number")
-        lr = self.parameter.get("dqn_learning_rate")
+        lr = self.parameter["dqn_learning_rate"]
         # reward_for_success = self.parameter.get("reward_for_success")
         # reward_for_fail = self.parameter.get("reward_for_fail")
         # reward_for_not_come_yet = self.parameter.get("reward_for_not_come_yet")
@@ -264,10 +289,10 @@ class RunningSteward(object):
         reward_for_not_come_yet = dialogue_configuration.REWARD_FOR_NOT_COME_YET
         reward_for_inform_right_symptom = dialogue_configuration.REWARD_FOR_INFORM_RIGHT_SLOT
 
-        max_turn = self.parameter.get("max_turn")
+        max_turn = self.parameter["max_turn"]
         # minus_left_slots = self.parameter.get("minus_left_slots")
-        gamma = self.parameter.get("gamma")
-        epsilon = self.parameter.get("epsilon")
+        gamma = self.parameter["gamma"]
+        epsilon = self.parameter["epsilon"]
         # data_set_name = self.parameter.get("goal_set").split("/")[-2]
         # run_id = self.parameter.get('run_id')
         info = "learning_rate_d" + "_T" + str(max_turn) + "_lr" + str(lr) + "_RFS" + str(reward_for_success) + \

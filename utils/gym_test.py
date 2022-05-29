@@ -2,21 +2,21 @@ import time
 from collections import deque
 
 import gym
+import torch
 
 from policy_learning.actor_critic import ActorCritic
 from utils.config import get_config
-from utils.replay_memory import Memory
 from utils.zfilter import ZFilter
 
 
-def simulation_epoch(env, agent, running_state, parameter):
+def simulation_epoch(env, agent, running_state, parameter, device):
     log = dict()
     total_reward = 0
     i_episode = 0
     MAX_EPISODE = parameter.get("MAX_EPISODE")
     RENDER = parameter.get("RENDER")
     trajectory_pool = deque(maxlen=48)
-    # memory = Memory()
+
     for i_episode in range(MAX_EPISODE):
         # s = env.reset()
         # t = 0
@@ -27,7 +27,8 @@ def simulation_epoch(env, agent, running_state, parameter):
             s = running_state(s)
         reward_episode = 0
         while True:
-            a = agent.actor.select_action(s).numpy()
+            s = torch.tensor(s, dtype=torch.float32, device=device).unsqueeze(0)
+            a = int(agent.actor.select_action(s).numpy())
             s_, r, done, info = env.step(a)
             reward_episode += r
             if done:
@@ -62,7 +63,7 @@ def simulation_epoch(env, agent, running_state, parameter):
     return log
 
 
-def eval(env, agent, running_state, parameter):
+def eval(env, agent, running_state, parameter, device):
     log = dict()
     total_reward = 0
     i_episode = 0
@@ -80,7 +81,8 @@ def eval(env, agent, running_state, parameter):
             s = running_state(s)
         reward_episode = 0
         while True:
-            a = agent.actor.select_action(s).numpy()
+            s = torch.tensor(s, dtype=torch.float32, device=device).unsqueeze(0)
+            a = int(agent.actor.select_action(s).numpy())
             s_, r, done, info = env.step(a)
             reward_episode += r
             if done:
@@ -115,17 +117,19 @@ def run():
     N_A = env.action_space.n
 
     running_state = ZFilter((N_F,), clip=5)
-    config_file = '../settings.yaml'
+    config_file = '../settings_dqn.yaml'
     parameter = get_config(config_file)['AC']
     iter_nums = parameter.get("ITER_NUMS")
     log_interval = parameter.get("LOG_INTERVAL")
-
+    device = torch.device('cuda',
+                          index=parameter.get("gpu_index", 1)) if torch.cuda.is_available() else torch.device(
+        'cpu')
     agent = ActorCritic(n_features=N_F, n_actions=N_A, param=parameter)
     for i in range(iter_nums):
         t0 = time.time()
-        log = simulation_epoch(env, agent, running_state, parameter)
+        log = simulation_epoch(env, agent, running_state, parameter, device)
         t1 = time.time()
-        log_eval = eval(env, agent, running_state, parameter)
+        log_eval = eval(env, agent, running_state, parameter, device)
         t2 = time.time()
         if i % log_interval == 0:
             print('{}\tT_update {:.4f}\tT_eval {:.4f}\ttrain_R_avg {:.2f}\teval_R_avg {:.2f}'.format(

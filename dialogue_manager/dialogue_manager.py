@@ -18,13 +18,14 @@ class DialogueManager(object):
         self.state_tracker = StateTracker(user=user, agent=agent, parameter=parameter)
         self.parameter = parameter
         # self.experience_replay_pool = deque(maxlen=self.parameter.get("experience_replay_pool_size"))
-        if self.parameter.get('prioritized_replay'):
-            self.experience_replay_pool = PrioritizedReplayBuffer(buffer_size=self.parameter.get("experience_replay_pool_size"))
+        if self.parameter['prioritized_replay']:
+            self.experience_replay_pool = PrioritizedReplayBuffer(buffer_size=self.parameter["experience_replay_pool_size"])
         else:
-            self.experience_replay_pool = deque(maxlen=self.parameter.get("experience_replay_pool_size"))
+            self.experience_replay_pool = deque(maxlen=self.parameter["experience_replay_pool_size"])
         self.inform_wrong_service_count = 0
-        self.trajectory = []
-        self.trajectory_pool = deque(maxlen=self.parameter.get("trajectory_pool_size", 100))
+        if self.parameter['agent_id'] == 2:
+            self.trajectory = []
+            self.trajectory_pool = deque(maxlen=self.parameter['AC']["trajectory_pool_size"])
 
     def initialize(self, train_mode=1, epoch_index=None, greedy_strategy=1):
         self.state_tracker.initialize()
@@ -79,10 +80,10 @@ class DialogueManager(object):
         # else:
         #     pass
         if save_record is True:
-            if self.parameter.get('prioritized_replay'):
+            if self.parameter['prioritized_replay']:
                 current_action_value = self.state_tracker.agent.current_action_value
                 target_action_value = self.state_tracker.agent.next_state_values_DDQN(prev_state)
-                TD_error = reward + self.parameter.get("gamma") * target_action_value - current_action_value
+                TD_error = reward + self.parameter["gamma"] * target_action_value - current_action_value
                 self.record_prioritized_training_sample(
                     state=prev_state,
                     agent_action=prev_agent_index,
@@ -102,7 +103,7 @@ class DialogueManager(object):
         else:
             pass
 
-        if episode_over is True:
+        if episode_over is True and self.parameter['agent_id'] == 2:
             self.trajectory_pool.append(copy.deepcopy(self.trajectory))
         prev_state = _state
 
@@ -111,8 +112,9 @@ class DialogueManager(object):
     def record_training_sample(self, state, agent_action, reward, next_state, episode_over):
         state = self.state_tracker.agent.state_to_representation_last(state)
         next_state = self.state_tracker.agent.state_to_representation_last(next_state)
-        self.experience_replay_pool.append((state, agent_action, reward, next_state, episode_over))  # 每两个turn添加一次
-        self.trajectory.append((state, agent_action, reward, next_state, episode_over))
+        self.experience_replay_pool.append((state, agent_action, reward, next_state, episode_over))
+        if self.parameter['agent_id'] == 2:# 每两个turn添加一次
+            self.trajectory.append((state, agent_action, reward, next_state, episode_over))
 
     def record_prioritized_training_sample(self, state, agent_action, reward, next_state, episode_over, TD_error):
         state_rep = self.state_tracker.agent.state_to_representation_last(state=state)
@@ -136,9 +138,9 @@ class DialogueManager(object):
         :return:
         """
         cur_bellman_err = 0.0
-        batch_size = self.parameter.get("batch_size", 16)
+        batch_size = self.parameter["batch_size"]
         for iter in range(int(len(self.experience_replay_pool) / (batch_size))):
-            if self.parameter.get('prioritized_replay'):
+            if self.parameter['prioritized_replay']:
                 batch = self.experience_replay_pool.sample(batch_size)
             else:
                 batch = random.sample(self.experience_replay_pool, batch_size)  # sample()用于随机抽样。
@@ -155,7 +157,7 @@ class DialogueManager(object):
         :return:
         """
         trajectory_pool = list(self.trajectory_pool)
-        batch_size = self.parameter.get("batch_size", 16)
+        batch_size = self.parameter["batch_size"]
         for index in range(0, len(self.trajectory_pool), batch_size):
             stop = max(len(self.trajectory_pool), index + batch_size)
             batch_trajectory = trajectory_pool[index:stop]

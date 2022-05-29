@@ -1,0 +1,24 @@
+epoch_size: 50
+warm_start: 1
+warm_start_epoch_number: 20
+train_mode: 0
+allow_wrong_service: 1
+max_turn: 8
+simulate_epoch_number: 500
+evaluate_epoch_number: 50
+save_performance: True
+# 0: rule 1: dqn 2: AC
+agent_id: 1
+#saved_model: model/model_d_agent_dqn_s1.0_r36.4_t3.36_wd0.0_e49.pkl
+
+OUTPUT_GRAPH: False
+MAX_EPISODE: 500
+trajectory_pool_size: 48
+DISPLAY_REWARD_THRESHOLD: 200  # renders environment if total episode reward is greater then this threshold
+MAX_EP_STEPS: 1000  # maximum time step in one episode
+RENDER: False  # rendering wastes time
+GAMMA: 0.9  # reward discount in TD error
+LR_A: 0.001  # learning rate for actor
+LR_C: 0.01  # learning rate for critic
+ITER_NUMS: 500
+LOG_INTERVAL: 1

@@ -32,15 +32,15 @@ class User(object):
         }
         with open('data/goal_set.json', 'r') as f:
             goal_set = json.load(f)
-
-        self.goal_set = goal_set[str(random.randint(0, len(goal_set) - 1))]
+        self.goal_id = random.randint(0, len(goal_set) - 1)
+        self.goal_set = goal_set[str(self.goal_id)]
         self.goal = self.goal_set["goal"]
         # print(self.goal)
         self.episode_over = False
         self.dialogue_status = dialogue_configuration.DIALOGUE_STATUS_NOT_COME_YET
 
     def get_goal(self):
-        return copy.deepcopy(self.goal)
+        return copy.deepcopy(self.goal), self.goal_id
 
     def initialize(self):
         self._init()
