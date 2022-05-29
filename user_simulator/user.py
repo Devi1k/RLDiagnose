@@ -120,8 +120,9 @@ class User(object):
             "service_tag"]:
             # The user denys the informed service, and the dialogue will going on.
             if self.allow_wrong_service == 1:
-                self.state[
-                    "action"] = "deny"  # 这里要结合agent的改，agent inform了一个错的服务，要怎么办，我感觉要么失败要么是inform了一个错的max_slot啊//之后再改吧，反正这种应该不会出现
+                # 这里要结合agent的改，agent inform了一个错的服务，要怎么办，我感觉要么失败要么是inform了一个错的max_slot啊
+                self.state["action"] = "deny"
+                # //之后再改吧，反正这种应该不会出现
                 self.state["inform_slots"]["service"] = agent_action["inform_slots"]["service"]
                 self.dialogue_status = dialogue_configuration.DIALOGUE_STATUS_INFORM_WRONG_SERVICE
             else:

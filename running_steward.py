@@ -77,8 +77,10 @@ class RunningSteward(object):
             if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_FAILED:
                 per_epoch['status'] = 'failed'
             try:
-                if agent_action['action'] != 'inform':
+                if agent_action['action'] != 'inform' and prev_state['agent_action']['action'] == 'inform':
                     per_epoch['perdict'] = prev_state['agent_action']['inform_slots']['service']
+                elif prev_state['agent_action']['action'] != 'inform':
+                    per_epoch['perdict'] = "".join(list(prev_state['agent_action']['request_slots'].keys()))
                 else:
                     per_epoch['perdict'] = agent_action['inform_slots']['service']
             except KeyError:
@@ -87,7 +89,7 @@ class RunningSteward(object):
 
             # if epoch_index == 0:
             #     if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_SUCCESS:
-            #         with open("result.json", "w", encoding='utf-8') as f:
+            #         with open("pre_result.json", "w", encoding='utf-8') as f:
             #             f.write("goal_set=[\n")
             #             f.write("{'consult_id':" + index + ",\n")
             #             f.write("'goal':" + item + "},\n")
