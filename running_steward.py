@@ -2,6 +2,7 @@
 
 import copy
 import json
+import os
 import pickle
 from collections import deque
 
@@ -86,36 +87,6 @@ class RunningSteward(object):
             except KeyError:
                 print(prev_state)
             result[epoch_index] = per_epoch
-
-            # if epoch_index == 0:
-            #     if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_SUCCESS:
-            #         with open("pre_result.json", "w", encoding='utf-8') as f:
-            #             f.write("goal_set=[\n")
-            #             f.write("{'consult_id':" + index + ",\n")
-            #             f.write("'goal':" + item + "},\n")
-            #     if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_FAILED:
-            #         with open("fail.json", "w", encoding='utf-8') as f:
-            #             f.write("goal_set=[\n")
-            #             f.write("{'consult_id':" + index + ",\n")
-            #             f.write("'goal':" + item + ",\n")
-            # elif epoch_index == epoch_size - 1:
-            #     if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_SUCCESS:
-            #         with open("success.json", "w+", encoding='utf-8') as f:
-            #             f.write("{'consult_id':" + index + ",\n")
-            #             f.write("'goal':" + item + "}]\n")
-            #     if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_FAILED:
-            #         with open("fail.json", "w+", encoding='utf-8') as f:
-            #             f.write("{'consult_id':" + index + ",\n")
-            #             f.write("'goal':" + item + "]\n")
-            # else:
-            #     if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_SUCCESS:
-            #         with open("success.json", "w+", encoding='utf-8') as f:
-            #             f.write("{'consult_id':" + index + ",\n")
-            #             f.write("'goal':" + item + "},\n")
-            #     if dialogue_status == dialogue_configuration.DIALOGUE_STATUS_FAILED:
-            #         with open("fail.json", "w+", encoding='utf-8') as f:
-            #             f.write("{'consult_id':" + index + ",\n")
-            #             f.write("'goal':" + item + ",\n")
         with open('result.json', 'w') as f:
             json.dump(result, f, indent=4, ensure_ascii=False)
         success_rate = float("%.3f" % (float(success_count) / epoch_size))
@@ -165,7 +136,7 @@ class RunningSteward(object):
                     res["average_wrong_disease"]))
                 self.dialogue_manager.train()
                 result = self.evaluate_model(index)
-                if result["success_rate"] >= self.best_result["success_rate"] and \
+                if result["success_rate"] >= 0.60 and result["success_rate"] >= self.best_result["success_rate"] and \
                         result["average_wrong_disease"] <= self.best_result[
                     "average_wrong_disease"] and train_mode == 1:
                     # self.dialogue_manager.experience_replay_pool = deque(
@@ -266,15 +237,15 @@ class RunningSteward(object):
         # minus_left_slots = self.parameter.get("minus_left_slots")
         gamma = self.parameter["gamma"]
         epsilon = self.parameter["epsilon"]
-        run_id = self.parameter['run_id']
 
         file_name = "learning_rate_d" + "_e" + "_agent" + "_T" + str(max_turn) + "_lr" + str(lr) + "_RFS" + str(
             reward_for_success) + \
                     "_RFF" + str(reward_for_fail) + "_RFNCY" + str(reward_for_not_come_yet) + "_RFIRS" + str(
-            reward_for_inform_right_symptom) + "_gamma" + str(gamma) + "_epsilon" + str(
-            epsilon) + "_RID" + str(run_id) + "_" + str(epoch_index) + ".p"
-
-        pickle.dump(file=open(self.parameter["performance_save_path"] + file_name, "wb"), obj=self.learning_curve)
+            reward_for_inform_right_symptom) + "_gamma" + str(gamma) + "_epsilon" + str(epsilon) + "_" + str(
+            epoch_index) + ".p"
+        file_name = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 self.parameter["performance_save_path"], file_name)
+        pickle.dump(file=open(file_name, "wb"), obj=self.learning_curve)
 
     def __print_run_info__(self):
         # print(json.dumps(self.parameter, indent=2))

@@ -20,4 +20,4 @@ experience_replay_pool_size: 20000
 epsilon: 0.1
 gamma: 1.0
 dqn_learning_rate: 0.001
-performance_save_path: /home/yanking/disk1/nizepu/govChatbot/model/dqn/learning_rate
+performance_save_path: model/dqn/learning_rate

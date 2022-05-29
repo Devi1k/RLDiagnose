@@ -322,6 +322,7 @@ class DQN2(object):
         # assert train_mode is not None
         # if train_mode is False:
         #     self.current_net.eval()
+        # todo: change tensor
         Xs = torch.Tensor(Xs).to(device=self.device)
         Ys = self.current_net(Xs)
         # print(Ys.detach().numpy())
