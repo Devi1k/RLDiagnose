@@ -323,7 +323,7 @@ class DQN2(object):
         # if train_mode is False:
         #     self.current_net.eval()
         # todo: change tensor
-        Xs = torch.Tensor(Xs).to(device=self.device)
+        Xs = torch.Tensor(np.array(Xs)).to(device=self.device)
         Ys = self.current_net(Xs)
         # print(Ys.detach().numpy())
         # self.current_net.train()
@@ -331,7 +331,7 @@ class DQN2(object):
         return Ys, max_index[0]
 
     def predict_target(self, Xs, **kwargs):
-        Xs = torch.Tensor(Xs).to(device=self.device)
+        Xs = torch.Tensor(np.array(Xs)).to(device=self.device)
         Ys = self.target_net(Xs)
         # max_index = np.argmax(Ys.detach().cpu().numpy(), axis=1)
         return Ys
