@@ -4,6 +4,7 @@ import argparse
 import json
 import os.path
 
+from agent.agent_actor_critic import AgentActorCritic
 from agent.agent_dqn import *
 from agent.agent_rule import *
 from running_steward import RunningSteward
@@ -44,8 +45,11 @@ from utils.config import get_config
 # parser.add_argument("--max_turn", dest="max_turn", type=int, default=8, help="the max turn in one episode.")
 # parser.add_argument("--input_size_dqn", dest="input_size_dqn", type=int, default=1221, help="the input_size of DQN.")
 # args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument("--agent_type", type=str, default="dqn", help="the type of agent {dqn,ac}")
+args = parser.parse_args()
 
-config_file = 'settings_dqn.yaml'
+config_file = "settings_" + args.agent_type + ".yaml"
 parameter = get_config(config_file)
 # parameter = vars(args)
 print(json.dumps(parameter, indent=2))
@@ -74,7 +78,10 @@ def run():
         agent = AgentRule(parameter=parameter)
         steward.warm_start(agent=agent, epoch_number=warm_start_epoch_number)
     # simulate
-    agent = AgentDQN(parameter=parameter)
+    if args.agent_type == 'dqn':
+        agent = AgentDQN(parameter=parameter)
+    elif args.agent_type == 'ac':
+        agent = AgentActorCritic(parameter=parameter)
     steward.simulate(agent=agent, epoch_number=simulate_epoch_number, train_mode=train_mode)
 
 

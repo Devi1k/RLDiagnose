@@ -66,7 +66,7 @@ class User(object):
     def next(self, agent_action, turn):
         agent_act_type = agent_action["action"]
         self.state["turn"] = turn
-        if self.state["turn"] == (self.max_turn - 2):
+        if self.state["turn"] == self.max_turn:
             self.episode_over = True
             self.state["action"] = dialogue_configuration.CLOSE_DIALOGUE
             self.dialogue_status = dialogue_configuration.DIALOGUE_STATUS_FAILED
@@ -122,7 +122,7 @@ class User(object):
             if self.allow_wrong_service == 1:
                 # 这里要结合agent的改，agent inform了一个错的服务，要怎么办，我感觉要么失败要么是inform了一个错的max_slot啊
                 self.state["action"] = "deny"
-                # //之后再改吧，反正这种应该不会出现
+                # 之后再改吧，反正这种应该不会出现
                 self.state["inform_slots"]["service"] = agent_action["inform_slots"]["service"]
                 self.dialogue_status = dialogue_configuration.DIALOGUE_STATUS_INFORM_WRONG_SERVICE
             else:

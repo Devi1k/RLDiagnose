@@ -1,17 +1,19 @@
 epoch_size: 50
-warm_start: 1
+gpu_index: 1
+warm_start: 0
 warm_start_epoch_number: 20
-train_mode: 0
+train_mode: 1
 allow_wrong_service: 1
 max_turn: 8
 simulate_epoch_number: 500
 evaluate_epoch_number: 50
 save_performance: True
 # 0: rule 1: dqn 2: AC
-agent_id: 1
-#saved_model: model/model_d_agent_dqn_s1.0_r36.4_t3.36_wd0.0_e49.pkl
-
+agent_id: 2
+saved_model: model/dqn/checkpoint/change_goalset_s0.83.pkl
+input_size: 1221
 OUTPUT_GRAPH: False
+batch_size: 30
 MAX_EPISODE: 500
 trajectory_pool_size: 48
 DISPLAY_REWARD_THRESHOLD: 200  # renders environment if total episode reward is greater then this threshold

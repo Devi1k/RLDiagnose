@@ -7,6 +7,8 @@ import pickle
 from collections import deque
 
 import dialogue_configuration
+from agent.agent_actor_critic import AgentActorCritic
+from agent.agent_dqn import AgentDQN
 from agent.agent_rule import AgentRule
 from dialogue_manager.dialogue_manager import DialogueManager
 from policy_learning.PrioritizedReplay import PrioritizedReplayBuffer
@@ -126,15 +128,16 @@ class RunningSteward(object):
         self.dialogue_manager.set_agent(agent=agent)
         if train_mode == 1:
             for index in range(0, epoch_number, 1):
-                # Training AgentDQN with experience replay
-                # if train_mode == 1 and isinstance(self.dialogue_manager.state_tracker.agent, AgentDQN):
-                # Simulating and filling experience replay pool.
-                # res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
-                res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
+                if isinstance(self.dialogue_manager.state_tracker.agent, AgentDQN):
+                    res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
+                    self.dialogue_manager.train()
+                elif isinstance(self.dialogue_manager.state_tracker.agent, AgentActorCritic):
+                    res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)
+                    self.dialogue_manager.train()
                 print("Train %3d simulation SR %s, ABSR %s,ave reward %s, ave turns %s, ave wrong service %s" % (
                     index, res['success_rate'], res["ab_success_rate"], res['average_reward'], res['average_turn'],
                     res["average_wrong_disease"]))
-                self.dialogue_manager.train()
+
                 result = self.evaluate_model(index)
                 if result["success_rate"] >= 0.60 and result["success_rate"] >= self.best_result["success_rate"] and \
                         result["average_wrong_disease"] <= self.best_result[
@@ -222,54 +225,53 @@ class RunningSteward(object):
         if self.parameter['agent_id'] == 1:
             lr = self.parameter["dqn_learning_rate"]
         elif self.parameter['agent_id'] == 2:
-            lr_a = self.parameter['AC']["LR_A"]
-            lr_c = self.parameter["AC"]["LR_C"]
+            lr_a = self.parameter["LR_A"]
+            lr_c = self.parameter["LR_C"]
         # reward_for_success = self.parameter.get("reward_for_success")
         # reward_for_fail = self.parameter.get("reward_for_fail")
         # reward_for_not_come_yet = self.parameter.get("reward_for_not_come_yet")
         # reward_for_inform_right_symptom = self.parameter.get("reward_for_inform_right_symptom")
         reward_for_success = dialogue_configuration.REWARD_FOR_DIALOGUE_SUCCESS
         reward_for_fail = dialogue_configuration.REWARD_FOR_DIALOGUE_FAILED
-        reward_for_not_come_yet = dialogue_configuration.REWARD_FOR_NOT_COME_YET
-        reward_for_inform_right_symptom = dialogue_configuration.REWARD_FOR_INFORM_RIGHT_SLOT
+        # reward_for_not_come_yet = dialogue_configuration.REWARD_FOR_NOT_COME_YET
+        # reward_for_inform_right_symptom = dialogue_configuration.REWARD_FOR_INFORM_RIGHT_SLOT
 
         max_turn = self.parameter["max_turn"]
         # minus_left_slots = self.parameter.get("minus_left_slots")
-        gamma = self.parameter["gamma"]
-        epsilon = self.parameter["epsilon"]
+        # gamma = self.parameter["gamma"]
+        # epsilon = self.parameter["epsilon"]
 
-        file_name = "learning_rate_d" + "_e" + "_agent" + "_T" + str(max_turn) + "_lr" + str(lr) + "_RFS" + str(
-            reward_for_success) + \
-                    "_RFF" + str(reward_for_fail) + "_RFNCY" + str(reward_for_not_come_yet) + "_RFIRS" + str(
-            reward_for_inform_right_symptom) + "_gamma" + str(gamma) + "_epsilon" + str(epsilon) + "_" + str(
-            epoch_index) + ".p"
+        file_name = "learning_rate_d" + "_e" + "_agent" + "_T" + str(max_turn) + "_RFS" + str(
+            reward_for_success) + "_RFF" + str(reward_for_fail) + "_" + str(epoch_index) + ".p"
         file_name = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                  self.parameter["performance_save_path"], file_name)
         pickle.dump(file=open(file_name, "wb"), obj=self.learning_curve)
 
     def __print_run_info__(self):
         # print(json.dumps(self.parameter, indent=2))
-        # agent_id = self.parameter.get("agent_id")
+        agent_id = self.parameter.get("agent_id")
         # dqn_id = self.parameter.get("dqn_id")
         # service_number = self.parameter.get("service_number")
-        lr = self.parameter["dqn_learning_rate"]
+        # if agent_id == '1':
+        #     lr = self.parameter["dqn_learning_rate"]
+        # elif agent_id == '2':
+        #     lr
         # reward_for_success = self.parameter.get("reward_for_success")
         # reward_for_fail = self.parameter.get("reward_for_fail")
         # reward_for_not_come_yet = self.parameter.get("reward_for_not_come_yet")
         # reward_for_inform_right_symptom = self.parameter.get("reward_for_inform_right_symptom")
         reward_for_success = dialogue_configuration.REWARD_FOR_DIALOGUE_SUCCESS
         reward_for_fail = dialogue_configuration.REWARD_FOR_DIALOGUE_FAILED
-        reward_for_not_come_yet = dialogue_configuration.REWARD_FOR_NOT_COME_YET
-        reward_for_inform_right_symptom = dialogue_configuration.REWARD_FOR_INFORM_RIGHT_SLOT
+        # reward_for_not_come_yet = dialogue_configuration.REWARD_FOR_NOT_COME_YET
+        # reward_for_inform_right_symptom = dialogue_configuration.REWARD_FOR_INFORM_RIGHT_SLOT
 
         max_turn = self.parameter["max_turn"]
         # minus_left_slots = self.parameter.get("minus_left_slots")
-        gamma = self.parameter["gamma"]
-        epsilon = self.parameter["epsilon"]
+        # gamma = self.parameter["gamma"]
+        # epsilon = self.parameter["epsilon"]
         # data_set_name = self.parameter.get("goal_set").split("/")[-2]
         # run_id = self.parameter.get('run_id')
-        info = "learning_rate_d" + "_T" + str(max_turn) + "_lr" + str(lr) + "_RFS" + str(reward_for_success) + \
-               "_RFF" + str(reward_for_fail) + "_RFNCY" + str(reward_for_not_come_yet) + "_RFIRS" + str(
-            reward_for_inform_right_symptom) + "_gamma" + str(gamma) + "_epsilon" + str(epsilon)
+        info = "learning_rate_d" + "_T" + str(max_turn) + "_RFS" + str(reward_for_success) + \
+               "_RFF" + str(reward_for_fail)
 
         print("[INFO]:", info)

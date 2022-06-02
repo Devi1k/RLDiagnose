@@ -55,9 +55,9 @@ class Agent(object):
             {'speaker': 'agent', 'action': dialogue_configuration.THANKS, 'inform_slots': {}, 'request_slots': {}}
         ]
         #   Adding the inform actions and request actions.
-        for slot in sorted(self.slot_max_weight.keys()):
-            feasible_actions.append({'speaker': 'agent', 'action': 'request', 'inform_slots': {},
-                                     'request_slots': {slot: dialogue_configuration.VALUE_UNKNOWN}})
+        # for slot in sorted(self.slot_max_weight.keys()):
+        #     feasible_actions.append({'speaker': 'agent', 'action': 'request', 'inform_slots': {},
+        #                              'request_slots': {slot: dialogue_configuration.VALUE_UNKNOWN}})
         # Services as actions.
         for slot in service:
             feasible_actions.append(
@@ -95,7 +95,7 @@ class Agent(object):
                 current_slots_rep[self.slot_set[slot]] = 1.0
             elif current_slots[slot] == False:
                 current_slots_rep[self.slot_set[slot]] = -1.0
-        turn_rep = np.zeros(self.parameter["max_turn"])
+        turn_rep = np.zeros(self.parameter["max_turn"] + 1)
         turn_rep[state["turn"]] = 1.0
         user_action_rep = np.zeros(len(self.action_set))
         user_action_rep[self.action_set[state["user_action"]["action"]]] = 1.0

@@ -27,8 +27,7 @@ def simulation_epoch(env, agent, running_state, parameter, device):
             s = running_state(s)
         reward_episode = 0
         while True:
-            s = torch.tensor(s, dtype=torch.float32, device=device).unsqueeze(0)
-            a = int(agent.actor.select_action(s).numpy())
+            a = int(agent.actor.select_action(s).detach().cpu().numpy())
             s_, r, done, info = env.step(a)
             reward_episode += r
             if done:
@@ -81,8 +80,8 @@ def eval(env, agent, running_state, parameter, device):
             s = running_state(s)
         reward_episode = 0
         while True:
-            s = torch.tensor(s, dtype=torch.float32, device=device).unsqueeze(0)
-            a = int(agent.actor.select_action(s).numpy())
+            # s = torch.tensor(s, dtype=torch.float32, device=device).unsqueeze(0)
+            a = int(agent.actor.select_action(s).detach().cpu().numpy())
             s_, r, done, info = env.step(a)
             reward_episode += r
             if done:
@@ -117,8 +116,8 @@ def run():
     N_A = env.action_space.n
 
     running_state = ZFilter((N_F,), clip=5)
-    config_file = '../settings_dqn.yaml'
-    parameter = get_config(config_file)['AC']
+    config_file = '../settings_ac.yaml'
+    parameter = get_config(config_file)
     iter_nums = parameter.get("ITER_NUMS")
     log_interval = parameter.get("LOG_INTERVAL")
     device = torch.device('cuda',

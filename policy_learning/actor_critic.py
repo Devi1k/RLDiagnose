@@ -1,3 +1,4 @@
+import os
 from collections import namedtuple
 
 import numpy as np
@@ -8,12 +9,21 @@ from torch.distributions import Categorical
 
 
 class ActorCritic(object):
-    def __init__(self, n_features, n_actions, param, ):
-        self.actor = Actor(n_features=n_features, n_actions=n_actions, lr=param.get("LR_A", 0.001), param=param)
-        self.critic = Critic(n_features=n_features, lr=param.get("LR_C", 0.01), param=param)
+    def __init__(self, n_features, n_actions, param):
+        self.device = torch.device('cuda',
+                                   index=param.get("gpu_index", 1)) if torch.cuda.is_available() else torch.device(
+            'cpu')
+        self.actor = Actor(n_features=n_features, n_actions=n_actions, lr=param.get("LR_A", 0.001), param=param).to(
+            self.device)
+        self.critic = Critic(n_features=n_features, lr=param.get("LR_C", 0.01), param=param).to(self.device)
         self.gamma = param.get("GAMMA")
         self.Transition = namedtuple('Transition', ('state', 'action', 'mask', 'next_state',
                                                     'reward'))
+
+        if param["train_mode"] != 1:
+            self.restore_model(param["saved_model"])
+            self.actor.eval()
+            # self.target_net.eval()
 
     def train(self, trajectories):
         b_obs, b_acts, b_mask, b_next_obs, b_r = [], [], [], [], []
@@ -36,16 +46,51 @@ class ActorCritic(object):
         for turn in trajectory:
             obs.append(turn[0])
             acts.append(turn[1])
-            mask.append(turn[2])
+            r.append(turn[2])
+
             next_obs.append(turn[3])
-            r.append(turn[4])
+            mask.append(turn[4])
+
 
         return list(obs), list(acts), list(mask), list(next_obs), list(r)
 
+    def restore_model(self, saved_model):
+        """
+        Restoring the trained parameters for the model. Both current and target net are restored from the same parameter.
+
+        Args:
+            saved_model (str): the file name which is the trained model.
+        """
+        print("loading trained model", saved_model)
+        if torch.cuda.is_available() is False:
+            map_location = 'cpu'
+        else:
+            map_location = None
+        self.actor.load_state_dict(torch.load(saved_model, map_location=map_location))
+        # self.target_net.load_state_dict(self.current_net.state_dict())
+
+    def save_model(self, model_performance, episodes_index, checkpoint_path):
+        if os.path.isdir(checkpoint_path) is False:
+            # os.mkdir(checkpoint_path)
+            # print(os.getcwd())
+            os.makedirs(checkpoint_path)
+        # agent_id = self.params.get("agent_id").lower()
+        # disease_number = self.params.get("disease_number")
+        success_rate = model_performance["success_rate"]
+        average_reward = model_performance["average_reward"]
+        average_turn = model_performance["average_turn"]
+        average_wrong_disease = model_performance["average_wrong_disease"]
+        model_file_name = os.path.join(checkpoint_path,
+                                       "model_d" + "_agent" + "_a2c" + "_s" + str(success_rate) + "_r" + str(
+                                           average_reward) + "_t" + str(average_turn) + "_wd" + str(
+                                           average_wrong_disease) + "_e" + str(episodes_index) + ".pkl")
+
+        torch.save(self.actor.state_dict(), model_file_name)
+
 
 class Actor(nn.Module):
-    def __init__(self, n_features, n_actions, param, hidden_size=(128, 128), lr=0.0001, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, n_features, n_actions, param, hidden_size=(128, 128), lr=0.0001):
+        super().__init__()
         self.activation = torch.relu
         self.affine_layers = nn.ModuleList()
         last_dim = n_features
@@ -58,15 +103,15 @@ class Actor(nn.Module):
                                    index=param.get("gpu_index", 1)) if torch.cuda.is_available() else torch.device(
             'cpu')
 
-    def forward(self, s):
-        s = s.float().to(self.device)
+    def forward(self, states):
+        # s = torch.tensor(s).to(torch.float32).to(self.device)
+        s = torch.from_numpy(np.stack(states)).to(torch.float32).to(self.device).unsqueeze(0)
         for affine in self.affine_layers:
             s = self.activation(affine(s))
         action_prob = torch.softmax(self.action_head(s), dim=1)
         return action_prob
 
     def learn(self, states, actions, td_error):
-        states = torch.from_numpy(np.stack(states)).to(torch.float64).to(self.device).squeeze()
         # actions = torch.from_numpy(np.stack(actions)).to(torch.float64).to(self.device)
 
         log_probs = self.get_log_prob(states)
@@ -124,37 +169,34 @@ class Critic(nn.Module):
             'cpu')
 
     def forward(self, s):
-        s = s.float().to(self.device)
         for affine in self.affine_layers:
             s = self.activation(affine(s))
 
         value = self.value_head(s)
         return value
-        # return self.v(self.l1(s).relu())
 
     def learn(self, s, r, s_, masks):
-        s = torch.from_numpy(np.stack(s)).to(torch.float64).to(self.device).squeeze()
-        r = torch.from_numpy(np.stack(r)).to(torch.float64).to(self.device).squeeze()
-        s_ = torch.from_numpy(np.stack(s_)).to(torch.float64).to(self.device).squeeze()
-        masks = torch.from_numpy(np.stack(masks)).to(torch.float64).to(self.device).squeeze()
+        s = torch.from_numpy(np.stack(s)).to(torch.float32).to(self.device).squeeze()
+        r = torch.from_numpy(np.stack(r)).to(torch.float32).to(self.device).unsqueeze(1)
+        s_ = torch.from_numpy(np.stack(s_)).to(torch.float32).to(self.device).squeeze()
+        masks = torch.from_numpy(np.stack(masks)).to(torch.float32).to(self.device).unsqueeze(1)
 
         with torch.no_grad():
             v_ = self.forward(s_).squeeze(0)
             v = self.forward(s).squeeze(0)
-        # tensor_type = type(r)
-        # advantages = tensor_type(r.size(0), 1)
-        advantages, td_target = [], []
-        for i in range(r.size(0)):
-            advantages.append(r[i] + self.gamma * v_[i] * masks[i] - v[i])
-            td_target.append(r[i] + self.gamma * v_[i] * masks[i])
-        advantages = torch.from_numpy(np.stack(advantages)).to(torch.float64).to(self.device).squeeze()
-        td_target = torch.from_numpy(np.stack(td_target)).to(torch.float64).to(self.device)
-        advantages = ((advantages - advantages.mean()) / advantages.std()).squeeze()
+        td_target = r + self.gamma * torch.mul(v_, masks)
+        advantages = r + self.gamma * torch.mul(v_, masks) - v
+        # advantages, td_target = [], []
+        # for i in range(r.size(0)):
+        #     advantages.append(r[i] + self.gamma * v_[i] * masks[i] - v[i])
+        #     td_target.append(r[i] + self.gamma * v_[i] * masks[i])
+        # td_target = torch.from_numpy(np.stack(td_target)).to(torch.float64).to(self.device)
         loss = self.loss(v, td_target)
-        for param in self.parameters():
-            loss += param.pow(2).sum() * self.l2_reg
-
+        # for param in self.parameters():
+        #     loss += param.pow(2).sum() * self.l2_reg
+        loss.requires_grad_(True)
         loss.backward()
         self.optim.step()
         self.optim.zero_grad()
+
         return advantages

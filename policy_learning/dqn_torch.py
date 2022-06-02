@@ -235,7 +235,7 @@ class DQN2(object):
         # Compute Q(s_t, a) - the model computes Q(s_t), then we select the columns of actions taken
         state_action_values = self.current_net(state_batch).gather(1, action_batch)
 
-        # Compute V(s_{t+0220173244_AgentWithGoal_T22_lr0.0001_RFS44_RFF-22_RFNCY-1_RFIRS-1_mls0_gamma0.95_gammaW0.95_epsilon0.1_awd0_crs0_hwg0_wc0_var0_sdai0_wfrs0.0_dtft1_dataReal_World_RID3_DQN}) for all next states.
+        # Compute V(s_{t}) for all next states.
         next_state_values = self.next_state_values_DQN(batch_size=batch_size, non_final_mask=non_final_mask,
                                                        non_final_next_states=non_final_next_states)
 
