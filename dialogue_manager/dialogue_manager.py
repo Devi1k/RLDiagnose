@@ -31,7 +31,7 @@ class DialogueManager(object):
             else:
                 self.experience_replay_pool = deque(maxlen=self.parameter["experience_replay_pool_size"])
 
-    def initialize(self, train_mode=1, epoch_index=None, greedy_strategy=1):
+    def initialize(self, greedy_strategy=1):
         self.state_tracker.initialize()
         self.inform_wrong_service_count = 0
         user_action = self.state_tracker.user.initialize()
@@ -48,7 +48,7 @@ class DialogueManager(object):
     def set_agent(self, agent):
         self.state_tracker.set_agent(agent=agent)
 
-    def next(self, prev_state, save_record, train_mode, prev_agent_action, prev_agent_index, greedy_strategy):
+    def next(self, prev_state, save_record, prev_agent_action, prev_agent_index, greedy_strategy):
 
         user_action, reward, episode_over, dialogue_status = self.state_tracker.user.next(
             agent_action=prev_agent_action,

@@ -30,8 +30,12 @@ class User(object):
             "explicit_inform_slots": {},  # For slots that belong to goal["explicit_inform_slots"]
             "implicit_inform_slots": {}  # For slots that belong to goal["implicit_inform_slots"]
         }
-        with open('data/goal_set.json', 'r') as f:
-            goal_set = json.load(f)
+        if self.parameter['train_mode'] == 1:
+            with open('data/goal_set_train.json', 'r') as f:
+                goal_set = json.load(f)
+        else:
+            with open('data/goal_set_test.json', 'r') as f:
+                goal_set = json.load(f)
         self.goal_id = random.randint(0, len(goal_set) - 1)
         self.goal_set = goal_set[str(self.goal_id)]
         self.goal = self.goal_set["goal"]

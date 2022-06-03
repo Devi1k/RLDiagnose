@@ -68,9 +68,18 @@ def generate_goalset(slot_max):
         res['goal'] = goal
         l[k] = res
         k += 1
-
-    with open('../data/goal_set.json', 'w') as f:
-        json.dump(l, f, indent=4, ensure_ascii=False)
+    train_size = round(0.8 * len(l))
+    test_size = len(l) - train_size
+    train_data = dict()
+    test_data = dict()
+    for q in range(train_size):
+        train_data[q] = l[q]
+    for q in range(train_size,len(l)):
+        test_data[q] = l[q]
+    with open('../data/goal_set_train.json', 'w') as f:
+        json.dump(train_data, f, indent=4, ensure_ascii=False)
+    with open('../data/goal_set_test.json', 'w') as f:
+        json.dump(test_data, f, indent=4, ensure_ascii=False)
 
 
 def generate_slot_set():

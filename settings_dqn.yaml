@@ -14,7 +14,7 @@ dqn_type: DuelingDQN
 batch_size: 30
 prioritized_replay: True
 #saved_model: model/dqn/checkpoint/change_goalset_s0.83.pkl
-saved_model: model/dqn/checkpoint/no_request.pkl
+saved_model: model/dqn/checkpoint/without_request_s0.9.pkl
 input_size_dqn: 1218
 hidden_size_dqn: 300
 experience_replay_pool_size: 20000

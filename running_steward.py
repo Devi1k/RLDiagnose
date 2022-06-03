@@ -4,6 +4,7 @@ import copy
 import json
 import os
 import pickle
+import random
 from collections import deque
 
 import dialogue_configuration
@@ -23,10 +24,10 @@ class RunningSteward(object):
     def __init__(self, parameter, checkpoint_path):
         self.epoch_size = parameter.get("epoch_size")
         self.parameter = parameter
-        user = User(parameter=parameter)
-        agent = AgentRule(parameter=parameter)
+        self.user = User(parameter=parameter)
+        self.agent = AgentRule(parameter=parameter)
         # agent = AgentDQN(parameter=parameter['DQN'])
-        self.dialogue_manager = DialogueManager(user=user, agent=agent, parameter=parameter)
+        self.dialogue_manager = DialogueManager(user=self.user, agent=self.agent, parameter=parameter)
         self.eval_epoch_size = parameter['evaluate_epoch_number']
         self.best_result = {"success_rate": 0.0, "average_reward": 0.0, "average_turn": 0, "average_wrong_disease": 10}
         self.checkpoint_path = checkpoint_path
@@ -46,16 +47,11 @@ class RunningSteward(object):
         result = dict()
         for epoch_index in range(0, epoch_size, 1):
             per_epoch = dict()
-            agent_action, action_index, prev_state = self.dialogue_manager.initialize(
-                train_mode=self.parameter["train_mode"])
+            agent_action, action_index, prev_state = self.dialogue_manager.initialize()
             episode_over = False
             while episode_over is False:
-                # reward, episode_over, dialogue_status = self.dialogue_manager.next(save_record=True,
-                #                                                                    train_mode=train_mode,
-                #                                                                    greedy_strategy=1)
                 reward, episode_over, dialogue_status, _agent_action, _action_index, _prev_state = self.dialogue_manager.next(
                     save_record=True,
-                    train_mode=train_mode,
                     greedy_strategy=1,
                     prev_agent_action=agent_action,
                     prev_agent_index=action_index,
@@ -168,8 +164,12 @@ class RunningSteward(object):
         :return: a dict of evaluation results including success rate, average reward, average number of wrong services.
         """
         save_performance = self.parameter["save_performance"]
-
-        train_mode = self.parameter.get("train_mode")
+        with open('data/goal_set_test.json', 'r') as f:
+            goal_set = json.load(f)
+        first_index = int(list(goal_set.keys())[0])
+        self.user.goal_id = random.randint(0, len(goal_set) - 1) + first_index
+        self.user.goal_set = goal_set[str(self.user.goal_id)]
+        train_mode = 0
         success_count = 0
         absolute_success_count = 0
         total_reward = 0
@@ -178,14 +178,12 @@ class RunningSteward(object):
         # evaluate_epoch_number = len(self.dialogue_manager.state_tracker.user.goal_set["test"])
         inform_wrong_service_count = 0
         for epoch_index in range(0, evaluate_epoch_number, 1):
-            agent_action, action_index, prev_state = self.dialogue_manager.initialize(
-                train_mode=self.parameter["train_mode"])
+            agent_action, action_index, prev_state = self.dialogue_manager.initialize()
             episode_over = False
             while episode_over is False:
                 reward, episode_over, dialogue_status, _agent_action, _action_index, _prev_state = self.dialogue_manager.next(
                     save_record=True,
-                    train_mode=train_mode,
-                    greedy_strategy=1,
+                    greedy_strategy=0,
                     prev_agent_action=agent_action,
                     prev_agent_index=action_index,
                     prev_state=prev_state)
