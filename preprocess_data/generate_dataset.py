@@ -14,11 +14,13 @@ from data.configuration import service, requirement_weight
 
 def pick_slot(requirement, k=8):
     requirement.remove(requirement[0])
+    requirement.remove(requirement[1])
     slot = random.sample(requirement, k=k)
     return slot
 
 
 def generate_goalset(slot_max):
+    noise = False
     requirement_all = []
     for i in range(len(requirement_weight)):
         requirement_all.append([])
@@ -46,12 +48,17 @@ def generate_goalset(slot_max):
             other_requirement.append(copy.deepcopy(requirement_all[n_candidate[j]]))
         max_slot[slot_max[n]] = True
 
-        implicit_slots = pick_slot(requirement)
+        implicit_slots = pick_slot(requirement, k=4)
         explicit_slot = []
-        for j in range(4):
-            for item in pick_slot(other_requirement[j], 4):
-                explicit_slot.append(item)
-        explicit_slot = random.sample(explicit_slot, k=4) + pick_slot(requirement, 4)
+        if noise is False:
+            # 直接抽取
+            explicit_slot = pick_slot(requirement, k=4)
+        else:
+            # 加噪声抽取
+            for j in range(4):
+                for item in pick_slot(other_requirement[j], 4):
+                    explicit_slot.append(item)
+            explicit_slot = random.sample(explicit_slot, k=4) + pick_slot(requirement, 4)
 
         # slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8 = pick_slot(requirement)
         goal['request_slots'] = {'service': 'UNK'}
@@ -74,12 +81,18 @@ def generate_goalset(slot_max):
     test_data = dict()
     for q in range(train_size):
         train_data[q] = l[q]
-    for q in range(train_size,len(l)):
+    for q in range(train_size, len(l)):
         test_data[q] = l[q]
-    with open('../data/goal_set_train.json', 'w') as f:
-        json.dump(train_data, f, indent=4, ensure_ascii=False)
-    with open('../data/goal_set_test.json', 'w') as f:
-        json.dump(test_data, f, indent=4, ensure_ascii=False)
+    if noise is False:
+        with open('../data/no_noise_data/goal_set_train.json', 'w') as f:
+            json.dump(train_data, f, indent=4, ensure_ascii=False)
+        with open('../data/no_noise_data/goal_set_test.json', 'w') as f:
+            json.dump(test_data, f, indent=4, ensure_ascii=False)
+    else:
+        with open('../data/noise_data/goal_set_train.json', 'w') as f:
+            json.dump(train_data, f, indent=4, ensure_ascii=False)
+        with open('../data/noise_data/goal_set_test.json', 'w') as f:
+            json.dump(test_data, f, indent=4, ensure_ascii=False)
 
 
 def generate_slot_set():

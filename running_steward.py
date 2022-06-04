@@ -164,7 +164,7 @@ class RunningSteward(object):
         :return: a dict of evaluation results including success rate, average reward, average number of wrong services.
         """
         save_performance = self.parameter["save_performance"]
-        with open('data/goal_set_test.json', 'r') as f:
+        with open('data/noise_data/goal_set_test.json', 'r') as f:
             goal_set = json.load(f)
         first_index = int(list(goal_set.keys())[0])
         self.user.goal_id = random.randint(0, len(goal_set) - 1) + first_index
