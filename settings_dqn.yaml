@@ -1,9 +1,9 @@
 epoch_size: 50
 warm_start: 0
 warm_start_epoch_number: 20
-train_mode: 0
+train_mode: 1
 allow_wrong_service: 0
-max_turn: 6
+max_turn: 8
 simulate_epoch_number: 500
 evaluate_epoch_number: 200
 save_performance: False
@@ -15,7 +15,7 @@ batch_size: 30
 prioritized_replay: True
 #saved_model: model/dqn/checkpoint/change_goalset_s0.83.pkl
 saved_model: model/dqn/checkpoint/origin.pkl
-input_size_dqn: 1220
+input_size_dqn: 1222
 hidden_size_dqn: 300
 experience_replay_pool_size: 20000
 epsilon: 0.1

@@ -14,18 +14,31 @@ from data.configuration import service, requirement_weight
 
 def pick_slot(requirement, k=8):
     requirement.remove(requirement[0])
-    requirement.remove(requirement[1])
+    requirement.remove(requirement[0])
     slot = random.sample(requirement, k=k)
     return slot
 
 
-def generate_goalset(slot_max):
+def generate_goalset_and_dict(slot_max):
     noise = False
     requirement_all = []
     for i in range(len(requirement_weight)):
         requirement_all.append([])
     for i in range(len(requirement_weight)):
         requirement_all[i] = list(requirement_weight[i].keys())
+    dict_list = []
+
+    def make_dict(requirement):
+        requirement.remove(requirement[0])
+        requirement.remove(requirement[0])
+        for _r in requirement:
+            dict_list.append(_r + '\n')
+
+    for i in range(len(requirement_all)):
+        make_dict(requirement_all[i])
+
+    with open('../data/new_dict.txt', 'w') as f:
+        f.writelines(dict_list)
     l = dict()
     k = 0
     for i in range(400, 2000):
@@ -35,18 +48,18 @@ def generate_goalset(slot_max):
         explicit_inform_slots = dict()
         implicit_inform_slots = dict()
 
-        n = random.randint(0, len(service) - 1)
+        service_num = random.randint(0, len(service) - 1)
         n_candidate = []
         for j in range(4):
             x = random.randint(0, len(service) - 1)
-            while n == x:
+            while service_num == x:
                 x = random.randint(0, len(service) - 1)
             n_candidate.append(x)
-        requirement = copy.deepcopy(requirement_all[n])
+        requirement = copy.deepcopy(requirement_all[service_num])
         other_requirement = []
         for j in range(4):
             other_requirement.append(copy.deepcopy(requirement_all[n_candidate[j]]))
-        max_slot[slot_max[n]] = True
+        max_slot[slot_max[service_num]] = True
 
         implicit_slots = pick_slot(requirement, k=4)
         explicit_slot = []
@@ -63,7 +76,7 @@ def generate_goalset(slot_max):
         # slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8 = pick_slot(requirement)
         goal['request_slots'] = {'service': 'UNK'}
         goal['max_slot'] = max_slot
-        goal['service_tag'] = service[n]
+        goal['service_tag'] = service[service_num]
         for _x, _y in zip(explicit_slot, implicit_slots):
             explicit_inform_slots[_x] = True
             implicit_inform_slots[_y] = True
@@ -108,6 +121,7 @@ def generate_slot_set():
         slot_set[i] = v
         v += 1
     slot_set['service'] = v
+
     with open('../data/slot_set.json', 'w') as f:
         json.dump(slot_set, f, indent=4, ensure_ascii=False)
 
@@ -127,4 +141,4 @@ def generate_slot_max_weight():
 if __name__ == "__main__":
     generate_slot_set()
     slot_max = generate_slot_max_weight()
-    generate_goalset(slot_max)
+    generate_goalset_and_dict(slot_max)
