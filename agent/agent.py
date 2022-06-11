@@ -55,9 +55,9 @@ class Agent(object):
             {'speaker': 'agent', 'action': dialogue_configuration.THANKS, 'inform_slots': {}, 'request_slots': {}}
         ]
         #   Adding the inform actions and request actions.
-        # for slot in sorted(self.slot_max_weight.keys()):
-        #     feasible_actions.append({'speaker': 'agent', 'action': 'request', 'inform_slots': {},
-        #                              'request_slots': {slot: dialogue_configuration.VALUE_UNKNOWN}})
+        for slot in sorted(self.slot_max_weight.keys()):
+            feasible_actions.append({'speaker': 'agent', 'action': 'request', 'inform_slots': {},
+                                     'request_slots': {slot: dialogue_configuration.VALUE_UNKNOWN}})
         # Services as actions.
         for slot in service:
             feasible_actions.append(

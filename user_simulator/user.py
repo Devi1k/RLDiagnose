@@ -31,13 +31,18 @@ class User(object):
             "implicit_inform_slots": {}  # For slots that belong to goal["implicit_inform_slots"]
         }
         if self.parameter['train_mode'] == 1:
-            with open('data/goal_set_train.json', 'r') as f:
+            with open('data/no_noise_data/goal_set_train.json', 'r') as f:
                 goal_set = json.load(f)
+            self.goal_id = random.randint(0, len(goal_set) - 1)
+            self.goal_set = goal_set[str(self.goal_id)]
         else:
-            with open('data/goal_set_test.json', 'r') as f:
+            with open('data/no_noise_data/goal_set_test.json', 'r') as f:
                 goal_set = json.load(f)
-        self.goal_id = random.randint(0, len(goal_set) - 1)
-        self.goal_set = goal_set[str(self.goal_id)]
+            first_index = int(list(goal_set.keys())[0])
+            self.goal_id = random.randint(0, len(goal_set) - 1) + first_index
+            self.goal_set = goal_set[str(self.goal_id)]
+        # self.goal_id = random.randint(0, len(goal_set) - 1)
+        # self.goal_set = goal_set[str(self.goal_id)]
         self.goal = self.goal_set["goal"]
         # print(self.goal)
         self.episode_over = False
@@ -70,7 +75,7 @@ class User(object):
     def next(self, agent_action, turn):
         agent_act_type = agent_action["action"]
         self.state["turn"] = turn
-        if self.state["turn"] == self.max_turn:
+        if self.state["turn"] == self.max_turn - 2:
             self.episode_over = True
             self.state["action"] = dialogue_configuration.CLOSE_DIALOGUE
             self.dialogue_status = dialogue_configuration.DIALOGUE_STATUS_FAILED
@@ -125,7 +130,7 @@ class User(object):
             # The user denys the informed service, and the dialogue will going on.
             if self.allow_wrong_service == 1:
                 # 这里要结合agent的改，agent inform了一个错的服务，要怎么办，我感觉要么失败要么是inform了一个错的max_slot啊
-                self.state["action"] = "deny"
+                self.state["action"] = dialogue_configuration.DENY
                 # 之后再改吧，反正这种应该不会出现
                 self.state["inform_slots"]["service"] = agent_action["inform_slots"]["service"]
                 self.dialogue_status = dialogue_configuration.DIALOGUE_STATUS_INFORM_WRONG_SERVICE
