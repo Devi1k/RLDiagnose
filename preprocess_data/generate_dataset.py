@@ -64,9 +64,9 @@ def generate_goalset(slot_max):
         goal['request_slots'] = {'service': 'UNK'}
         goal['max_slot'] = max_slot
         goal['service_tag'] = service[n]
-        for m, n in zip(explicit_slot, implicit_slots):
-            explicit_inform_slots[m] = True
-            implicit_inform_slots[n] = True
+        for _x, _y in zip(explicit_slot, implicit_slots):
+            explicit_inform_slots[_x] = True
+            implicit_inform_slots[_y] = True
 
         goal['explicit_inform_slots'] = explicit_inform_slots
         goal['implicit_inform_slots'] = implicit_inform_slots
@@ -76,7 +76,7 @@ def generate_goalset(slot_max):
         l[k] = res
         k += 1
     train_size = round(0.8 * len(l))
-    test_size = len(l) - train_size
+    # test_size = len(l) - train_size
     train_data = dict()
     test_data = dict()
     for q in range(train_size):
