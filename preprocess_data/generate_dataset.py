@@ -6,7 +6,7 @@ import copy
 import json
 import random
 
-from data.configuration import service, requirement_weight
+from data.configuration_v1 import service, requirement_weight
 
 
 # f = open("goal_set.txt", 'w')
@@ -129,10 +129,15 @@ def generate_slot_set():
 def generate_slot_max_weight():
     slot_max_weight = dict()
     slot_max = []
+    # for i in range(len(requirement_weight)):
+    #     name = list(requirement_weight[i].keys())[1]
+    #     slot_max_weight[name] = 100
+    #     slot_max.append(name)
     for i in range(len(requirement_weight)):
-        name = list(requirement_weight[i].keys())[1]
-        slot_max_weight[name] = 100
-        slot_max.append(name)
+        for key, item in requirement_weight[i].items():
+            if item > 40 and item < 100:
+                slot_max.append(key)
+                slot_max_weight[key] = 100
     with open('../data/slot_max_weight.json', 'w') as f:
         json.dump(slot_max_weight, f, indent=4, ensure_ascii=False)
     return slot_max

@@ -9,7 +9,7 @@ from policy_learning.dqn_torch import DQN2 as DQN
 class AgentDQN(Agent):
     def __init__(self, parameter):
         super(AgentDQN, self).__init__(parameter=parameter)
-        input_size = parameter.get("input_size_dqn")
+        input_size = len(self.slot_set) * 5 + len(self.action_set) * 2 + parameter.get("max_turn") + 1
         hidden_size = parameter.get("hidden_size_dqn", 100)
         output_size = len(self.action_space)
         self.dqn = DQN(input_size=input_size, hidden_size=hidden_size, output_size=output_size, parameter=parameter)
