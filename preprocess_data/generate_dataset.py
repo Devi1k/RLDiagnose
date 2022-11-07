@@ -39,6 +39,8 @@ def generate_goalset_and_dict(slot_max):
 
     with open('../data/new_dict.txt', 'w') as f:
         f.writelines(dict_list)
+    with open('../data/similar.json','r') as f:
+        similar_dict = json.load(f)
     l = dict()
     k = 0
     for i in range(400, 2000):
@@ -65,7 +67,13 @@ def generate_goalset_and_dict(slot_max):
         explicit_slot = []
         if noise is False:
             # 直接抽取
-            explicit_slot = pick_slot(requirement, k=4)
+            slot_list = pick_slot(requirement, k=4)
+            for s in slot_list:
+                try:
+                    synonym = similar_dict[s][1]
+                except KeyError:
+                    synonym = s
+                explicit_slot.append(synonym)
         else:
             # 加噪声抽取
             for j in range(4):

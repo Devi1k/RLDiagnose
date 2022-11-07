@@ -4,7 +4,7 @@ warm_start_epoch_number: 20
 train_mode: 1
 allow_wrong_service: 1
 max_turn: 8
-simulate_epoch_number: 500
+simulate_epoch_number: 1000
 evaluate_epoch_number: 200
 save_performance: False
 # 0: rule 1: dqn 2: AC
@@ -14,7 +14,7 @@ dqn_type: DuelingDQN
 batch_size: 30
 prioritized_replay: True
 #saved_model: model/dqn/checkpoint/change_goalset_s0.83.pkl
-saved_model: model/dqn/checkpoint/origin.pkl
+saved_model: model/dqn/checkpoint/without_maxslot_model_d_agent_dqn_s0.96_r77.925_t5.0_wd0.015_e440.pkl
 #input_size_dqn: 1222
 hidden_size_dqn: 300
 experience_replay_pool_size: 20000

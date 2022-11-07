@@ -123,6 +123,7 @@ class RunningSteward(object):
         # save_model = self.parameter.get("save_model")  #要在参数那里设路径
         self.dialogue_manager.set_agent(agent=agent)
         if train_mode == 1:
+            # train model
             for index in range(0, epoch_number, 1):
                 if isinstance(self.dialogue_manager.state_tracker.agent, AgentDQN):
                     res = self.simulation_epoch(epoch_size=self.epoch_size, train_mode=train_mode)

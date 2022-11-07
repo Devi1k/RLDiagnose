@@ -86,6 +86,7 @@ class Agent(object):
         pass
 
     def state_to_representation_last(self, state):
+
         current_slots = copy.deepcopy(state["current_slots"]["inform_slots"])
         current_slots_rep = np.zeros(len(self.slot_set.keys()))
         for slot in current_slots.keys():
@@ -95,10 +96,15 @@ class Agent(object):
                 current_slots_rep[self.slot_set[slot]] = 1.0
             elif current_slots[slot] == False:
                 current_slots_rep[self.slot_set[slot]] = -1.0
+
+
         turn_rep = np.zeros(self.parameter["max_turn"] + 1)
         turn_rep[state["turn"]] = 1.0
+
+
         user_action_rep = np.zeros(len(self.action_set))
         user_action_rep[self.action_set[state["user_action"]["action"]]] = 1.0
+
         user_inform_slots = copy.deepcopy(state["user_action"]["inform_slots"])
         user_inform_slots.update(state["user_action"]["explicit_inform_slots"])
         user_inform_slots.update(state["user_action"]["implicit_inform_slots"])
@@ -110,15 +116,21 @@ class Agent(object):
                 user_inform_slots_rep[self.slot_set[slot]] = 1.0
             elif user_inform_slots[slot] == False:
                 user_inform_slots_rep[self.slot_set[slot]] = -1.0
+
+
         user_request_slots = copy.deepcopy(state["user_action"]["request_slots"])
         user_request_slots_rep = np.zeros(len(self.slot_set.keys()))
         for slot in user_request_slots.keys():
             user_request_slots_rep[self.slot_set[slot]] = 1.0
+
+
         agent_action_rep = np.zeros(len(self.action_set))
         try:
             agent_action_rep[self.action_set[state["agent_action"]["action"]]] = 1.0
         except:
             pass
+
+
         agent_inform_slots_rep = np.zeros(len(self.slot_set.keys()))
         try:
             agent_inform_slots = copy.deepcopy(state["agent_action"]["inform_slots"])
@@ -126,6 +138,8 @@ class Agent(object):
                 agent_inform_slots_rep[self.slot_set[slot]] = 1.0
         except:
             pass
+
+
         agent_request_slots_rep = np.zeros(len(self.slot_set.keys()))
         try:
             agent_request_slots = copy.deepcopy(state["agent_action"]["request_slots"])
@@ -133,6 +147,8 @@ class Agent(object):
                 agent_request_slots_rep[self.slot_set[slot]] = 1.0
         except:
             pass
+
+
         state_rep = np.hstack((current_slots_rep, user_action_rep, user_inform_slots_rep,
                                user_request_slots_rep, agent_action_rep, agent_inform_slots_rep,
                                agent_request_slots_rep, turn_rep))
