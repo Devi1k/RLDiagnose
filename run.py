@@ -4,6 +4,8 @@ import argparse
 import json
 import os.path
 
+import gensim
+
 from agent.agent_actor_critic import AgentActorCritic
 from agent.agent_dqn import *
 from agent.agent_rule import *
@@ -68,9 +70,8 @@ def run():
     warm_start_epoch_number = parameter["warm_start_epoch_number"]
     train_mode = parameter["train_mode"]
     simulate_epoch_number = parameter["simulate_epoch_number"]
-    steward = RunningSteward(parameter=parameter, checkpoint_path=checkpoint_path)
-
-
+    w2v_model = gensim.models.Word2Vec.load('data/wb.text.model')
+    steward = RunningSteward(parameter=parameter, checkpoint_path=checkpoint_path, model=w2v_model)
 
     # Warm start.
     if warm_start == 1 and train_mode == 1:

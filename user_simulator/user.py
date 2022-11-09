@@ -2,19 +2,27 @@
 
 import copy
 import json
+import os.path
 import random
 
 import dialogue_configuration
+from utils.word_match import *
 
 
 # from data.goal_set import goal_set
 
 
 class User(object):
-    def __init__(self, parameter):
+    def __init__(self, parameter, model):
         self.max_turn = parameter["max_turn"]
         self.parameter = parameter
         self.allow_wrong_service = parameter.get("allow_wrong_service")
+        self.word_dict = load_dict()
+        self.model = model
+        data_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
+        with open(os.path.join(data_path, 'similar.json'), 'r') as f:
+            self.similarity_dict = json.load(f)
+
         self._init()
 
     def _init(self):
@@ -43,7 +51,14 @@ class User(object):
             self.goal_set = goal_set[str(self.goal_id)]
         # self.goal_id = random.randint(0, len(goal_set) - 1)
         # self.goal_set = goal_set[str(self.goal_id)]
+
         self.goal = self.goal_set["goal"]
+        seg_list = copy.deepcopy(self.goal['explicit_inform_slots'])
+        tmp_list = replace_list(seg_list, self.word_dict, model=self.model, similarity_dict=self.similarity_dict)
+        tmp_exp = dict()
+        for r in tmp_list:
+            tmp_exp[r] = True
+        self.goal['explicit_inform_slots'] = tmp_exp
         # print(self.goal)
         self.episode_over = False
         self.dialogue_status = dialogue_configuration.DIALOGUE_STATUS_NOT_COME_YET
@@ -80,7 +95,6 @@ class User(object):
             self.state["action"] = dialogue_configuration.CLOSE_DIALOGUE
             self.dialogue_status = dialogue_configuration.DIALOGUE_STATUS_FAILED
 
-
         if self.episode_over is not True:
             if agent_act_type == "request":
                 self._response_request(agent_action=agent_action)
@@ -94,9 +108,10 @@ class User(object):
         for slot in agent_action["request_slots"].keys():
             # todo: Whether it should be judged as implicit inform slot
             if slot in self.goal["implicit_inform_slots"].keys():  # inform right max_slot
-            # if slot in self.goal["explicit_inform_slots"].keys():  # inform right max_slot
+                # if slot in self.goal["explicit_inform_slots"].keys():  # inform right max_slot
                 self.state["action"] = "inform"
-                self.state["inform_slots"][slot] = self.goal["explicit_inform_slots"][slot]
+                # self.state["inform_slots"][slot] = self.goal["explicit_inform_slots"][slot]
+                self.state["inform_slots"][slot] = self.goal["implicit_inform_slots"][slot]
                 self.dialogue_status = dialogue_configuration.DIALOGUE_STATUS_INFORM_RIGHT_SLOT
             else:
                 self.state["action"] = "inform"
@@ -113,19 +128,19 @@ class User(object):
                         implicit_inform.remove(slot)
             # elif slot not in self.goal[
             #     "max_slot"].keys():  # agent request wrong max_slot,user inform implicit_inform_slots
-                # self.state["action"] = "inform"
-                # self.state["inform_slots"][slot] = False
-                # self.dialogue_status = dialogue_configuration.DIALOGUE_STATUS_INFORM_WRONG_SLOT
-                # # user再说句话或者不说
-                # implicit_inform = list(self.goal["implicit_inform_slots"].keys())
-                # N = random.randint(0, 5)
-                # if N == 0:
-                #     pass
-                # else:
-                #     for i in range(N - 1):
-                #         slot = random.choice(implicit_inform)
-                #         self.state["inform_slots"][slot] = self.goal["implicit_inform_slots"][slot]
-                #         implicit_inform.remove(slot)
+            # self.state["action"] = "inform"
+            # self.state["inform_slots"][slot] = False
+            # self.dialogue_status = dialogue_configuration.DIALOGUE_STATUS_INFORM_WRONG_SLOT
+            # # user再说句话或者不说
+            # implicit_inform = list(self.goal["implicit_inform_slots"].keys())
+            # N = random.randint(0, 5)
+            # if N == 0:
+            #     pass
+            # else:
+            #     for i in range(N - 1):
+            #         slot = random.choice(implicit_inform)
+            #         self.state["inform_slots"][slot] = self.goal["implicit_inform_slots"][slot]
+            #         implicit_inform.remove(slot)
 
     def _response_inform(self, agent_action):
         user_all_inform_slots = copy.deepcopy(self.goal["explicit_inform_slots"])

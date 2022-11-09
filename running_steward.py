@@ -21,10 +21,10 @@ class RunningSteward(object):
     The steward of running the dialogue system.
     """
 
-    def __init__(self, parameter, checkpoint_path):
+    def __init__(self, parameter, checkpoint_path, model):
         self.epoch_size = parameter.get("epoch_size")
         self.parameter = parameter
-        self.user = User(parameter=parameter)
+        self.user = User(parameter=parameter, model=model)
         self.agent = AgentRule(parameter=parameter)
         # agent = AgentDQN(parameter=parameter['DQN'])
         self.dialogue_manager = DialogueManager(user=self.user, agent=self.agent, parameter=parameter)

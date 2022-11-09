@@ -1,2 +1,2 @@
-/model/dqn/checkpoint/
-/model/dqn/learning_rate/
+/model/*
+/data/wb.text.*
