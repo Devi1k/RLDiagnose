@@ -2,4 +2,4 @@
 
 cd disk1/nizepu/govChatbot
 conda activate CrossWOZ
-nohup python run.py
+nohup python run.py > train_log.out 2>&1 &

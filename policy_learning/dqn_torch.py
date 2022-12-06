@@ -81,19 +81,19 @@ class DuelingDQN(torch.nn.Module):
         # different layers. Two layers.
         self.fc_adv = torch.nn.Sequential(
             torch.nn.Linear(input_size, hidden_size, bias=True),
-            torch.nn.Dropout(0.5),
+            torch.nn.Dropout(0.1),
             torch.nn.LeakyReLU(),
             torch.nn.Linear(hidden_size, hidden_size),
-            torch.nn.Dropout(0.5),
+            torch.nn.Dropout(0.1),
             torch.nn.LeakyReLU(),
             torch.nn.Linear(hidden_size, output_size, bias=True)
         )
         self.fc_val = torch.nn.Sequential(
             torch.nn.Linear(input_size, hidden_size, bias=True),
-            torch.nn.Dropout(0.5),
+            torch.nn.Dropout(0.1),
             torch.nn.LeakyReLU(),
             torch.nn.Linear(hidden_size, hidden_size),
-            torch.nn.Dropout(0.5),
+            torch.nn.Dropout(0.1),
             torch.nn.LeakyReLU(),
             torch.nn.Linear(hidden_size, 1, bias=True)
         )
